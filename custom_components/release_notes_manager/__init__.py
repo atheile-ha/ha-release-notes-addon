@@ -103,7 +103,7 @@ async def create_backup(hass: HomeAssistant) -> bool:
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the Release Notes Manager component."""
     
-    _LOGGER.info("Setting up Release Notes Manager v0.2.3")
+    _LOGGER.info("Setting up Release Notes Manager v0.3.1")
     
     # Create backup of existing data before any changes
     await create_backup(hass)
