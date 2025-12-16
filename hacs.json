@@ -1,6 +1,5 @@
 {
   "name": "Release Notes Manager",
   "homeassistant": "2024.1.0",
-  "render_readme": true,
-  "documentation": "https://github.com/atheile-ha/ha-release-notes-addon"
+  "render_readme": true
 }
