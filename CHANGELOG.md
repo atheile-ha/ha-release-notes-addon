@@ -17,7 +17,6 @@ Dies ist das erste öffentliche Release des Home Assistant Release Notes Manager
 - Releases erstellen, bearbeiten und löschen
 - Versionierung mit individuellen Release-Nummern
 - Optionaler Release-Name (z.B. "Stable Release", "Weihnachts-Release")
-- Deutsches Datumsformat (DD.MM.YYYY) für bessere Lesbarkeit
 - Expandierbare Release-Cards für übersichtliche Darstellung
 - Kommentar-Feld für zusätzliche Release-Informationen
 
@@ -184,28 +183,6 @@ custom_components/release_notes_manager/
 - Tested with: 2024.12.x
 - Integration Type: System
 - IoT Class: Local Push
-
----
-
-## Geplante Features (Future Releases)
-
-### v0.4.0 (geplant)
-- [ ] Export als Markdown
-- [ ] Export als PDF
-- [ ] Release-Vergleich (Diff zwischen Versionen)
-- [ ] Mehrsprachigkeit (i18n)
-- [ ] Dark Mode Toggle
-- [ ] Release-Templates
-- [ ] Bulk-Operations
-- [ ] Statistiken & Analytics
-
-### v0.5.0 (geplant)
-- [ ] Git Integration
-- [ ] Changelog Generator
-- [ ] REST API Erweiterung
-- [ ] Webhook-Support
-- [ ] Notification-Service
-- [ ] Integration mit Home Assistant Frontend
 
 ---
 

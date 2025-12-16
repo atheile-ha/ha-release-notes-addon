@@ -178,21 +178,6 @@ Details: Genauere Temperaturregelung
 - Keine Multi-User Kollisionserkennung (Daten werden überschrieben)
 - Keine Export-Funktion
 
-## 🚀 Geplante Features
-
-### v0.4.0
-- Export als Markdown/PDF
-- Release-Vergleich (Diff)
-- Mehrsprachigkeit (i18n)
-- Dark Mode Toggle
-- Release-Templates
-
-### v0.5.0
-- Git Integration
-- Changelog Generator
-- Webhook-Support
-- REST API Erweiterung
-
 ## 💬 Feedback & Support
 
 **Gefällt dir die Integration?** ⭐ Gib einen GitHub Star!
