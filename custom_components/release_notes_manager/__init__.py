@@ -23,7 +23,11 @@ async def copy_www_files(hass: HomeAssistant) -> bool:
         www_dest = Path(hass.config.path("www")) / "release-notes"
         
         # Create destination directory (blocking call in executor)
-        await hass.async_add_executor_job(www_dest.mkdir, True, True)
+        # FIX: mkdir mit korrekten Parametern
+        def create_dir():
+            www_dest.mkdir(parents=True, exist_ok=True)
+        
+        await hass.async_add_executor_job(create_dir)
         
         # Copy files if source exists
         if www_source.exists():
@@ -45,7 +49,12 @@ async def initialize_data_file(hass: HomeAssistant) -> None:
     """Initialize release_data.json if it doesn't exist."""
     try:
         www_path = Path(hass.config.path("www"))
-        await hass.async_add_executor_job(www_path.mkdir, True, True)
+        
+        # FIX: mkdir mit korrekten Parametern
+        def create_dir():
+            www_path.mkdir(parents=True, exist_ok=True)
+        
+        await hass.async_add_executor_job(create_dir)
         
         data_file = www_path / "release_data.json"
         
@@ -103,7 +112,7 @@ async def create_backup(hass: HomeAssistant) -> bool:
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the Release Notes Manager component."""
     
-    _LOGGER.info("Setting up Release Notes Manager v0.3.1")
+    _LOGGER.info("Setting up Release Notes Manager v0.4.0")
     
     # Create backup of existing data before any changes
     await create_backup(hass)
@@ -118,62 +127,38 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     async def save_release_data(call: ServiceCall) -> None:
         """Save release data to JSON file."""
         try:
-            data_str = call.data.get('data')
-            
-            if not data_str:
-                _LOGGER.error("No data provided to save_release_data service")
+            data = call.data.get("data")
+            if not data:
+                _LOGGER.error("No data provided to save")
                 return
-            
-            # Parse JSON
-            try:
-                release_data = json.loads(data_str)
-            except json.JSONDecodeError as e:
-                _LOGGER.error("Invalid JSON data: %s", str(e))
-                return
-            
-            # Ensure www directory exists
+                
             www_path = Path(hass.config.path("www"))
-            www_path.mkdir(parents=True, exist_ok=True)
+            data_file = www_path / "release_data.json"
             
             # Create backup before saving
-            data_file = www_path / "release_data.json"
             if data_file.exists():
                 backup_file = www_path / "release_data.json.backup"
-                try:
-                    shutil.copy2(data_file, backup_file)
-                    _LOGGER.debug("Created backup: %s", backup_file)
-                except Exception as e:
-                    _LOGGER.warning("Could not create backup: %s", str(e))
+                await hass.async_add_executor_job(shutil.copy2, data_file, backup_file)
             
-            # Save to file
-            try:
+            # Write new data
+            def write_json():
                 with open(data_file, 'w', encoding='utf-8') as f:
-                    json.dump(release_data, f, ensure_ascii=False, indent=2)
-                
-                _LOGGER.info("Release notes saved successfully to %s", data_file)
-                
-                # Verify file was written
-                if data_file.exists():
-                    file_size = data_file.stat().st_size
-                    _LOGGER.info("File size: %d bytes", file_size)
-                else:
-                    _LOGGER.error("File was not created!")
-                    
-            except PermissionError as e:
-                _LOGGER.error("Permission denied writing to %s: %s", data_file, str(e))
-            except Exception as e:
-                _LOGGER.error("Error writing file: %s", str(e))
+                    json.dump(data, f, ensure_ascii=False, indent=2)
+            
+            await hass.async_add_executor_job(write_json)
+            
+            _LOGGER.info("Successfully saved release data to %s", data_file)
             
         except Exception as e:
-            _LOGGER.error("Error in save_release_data: %s", str(e))
-            import traceback
-            _LOGGER.error("Traceback: %s", traceback.format_exc())
+            _LOGGER.error("Error saving release data: %s", str(e))
     
-    hass.services.async_register(DOMAIN, "save_release_data", save_release_data)
+    # Register service
+    hass.services.async_register(DOMAIN, "save", save_release_data)
     
-    # Register API endpoint (no auth required for local access)
-    hass.http.register_view(ReleaseNotesAPIView())
-    _LOGGER.info("API endpoint registered: /api/release_notes_manager/save")
+    # Register API view
+    hass.http.register_view(ReleaseNotesAPIView(hass))
+    
+    _LOGGER.info("Release Notes Manager setup complete")
     
     return True
 
