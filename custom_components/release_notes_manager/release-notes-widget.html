@@ -4,7 +4,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="version" content="widget-0.1.0">
+  <meta name="version" content="widget-0.1.2">
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -173,7 +173,6 @@
       position: relative;
       display: flex;
       align-items: center;
-      min-height: 2rem;
       margin-top: 0.25rem;
     }
 
@@ -470,8 +469,30 @@ function getSummaryBadges(r) {
 }
 document.getElementById('search-input').addEventListener('input',e=>{state.searchTerm=e.target.value;render()});
 document.getElementById('category-filter').addEventListener('change',e=>{state.filterCategory=e.target.value;render()});
-console.log('🚀 Home Assistant Release Notes Widget v0.1.0 startet...');
+console.log('🚀 Home Assistant Release Notes Widget v0.1.2 startet...');
+// Force reload from localStorage (bypass any cache)
+const storageData=localStorage.getItem('ha_releases');
+if(storageData){
+  try{
+    const parsed=JSON.parse(storageData);
+    console.log('Loaded releases:',parsed.length);
+  }catch(e){
+    console.error('Error parsing localStorage:',e);
+  }
+}
 loadData();
+
+// Auto-Reload bei localStorage-Änderungen (alle 10s)
+let lastKnownData = localStorage.getItem('ha_releases');
+setInterval(() => {
+  const currentData = localStorage.getItem('ha_releases');
+  if (currentData !== lastKnownData && currentData !== null) {
+    console.log('📦 Daten-Update erkannt - Widget wird neu geladen...');
+    lastKnownData = currentData;
+    location.reload();
+  }
+}, 10000); // 10 Sekunden
+
 // Auto-expand erstes Release
 setTimeout(()=>{
   if(state.releases.length>0){
@@ -486,7 +507,7 @@ if(slider){slider.value=state.autoCollapseTimeout;updateTimeout(state.autoCollap
 
   <!-- Versions-Anzeige -->
   <div style="position: fixed; bottom: 10px; left: 10px; font-size: 11px; color: #9ca3af; font-family: monospace; z-index: 1000;">
-    Backend: v0.3.1 | Widget: v0.1.0
+    Backend: v0.3.1 | Widget: v0.1.2
   </div>
 </body>
 </html>

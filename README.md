@@ -6,7 +6,7 @@
 
 Ein umfassendes Release Notes Management System für Home Assistant mit Admin-Interface und Widget-Support.
 
-**Version:** v0.4.0 (Frontend) / v0.3.1 (Backend) / v0.1.0 (Widget)
+**Version:** v0.4.1 (Frontend) / v0.3.1 (Backend) / v0.1.2 (Widget)
 
 ## 🌟 Features
 
@@ -27,6 +27,7 @@ Ein umfassendes Release Notes Management System für Home Assistant mit Admin-In
 ### Widget-Version (release-notes-widget.html) 🆕
 
 - ✅ **Read-Only** - Nur Anzeige, keine Bearbeitungsmöglichkeit
+- ✅ **Auto-Reload** - Erkennt Änderungen automatisch (alle 10s) **NEU in v0.4.1!**
 - ✅ **Auto-Collapse** - Konfigurierbar (0, 10-300s)
 - ✅ **Smart Display** - Nur neuestes Release initial
 - ✅ **"Alle Releases anzeigen"** - Button lädt alle auf einmal
@@ -87,6 +88,7 @@ aspect_ratio: 100%
 1. **Alle laden:** Klick auf "Alle Releases anzeigen"
 2. **Zurück:** Klick auf "Nur neuestes Release"
 3. **Settings:** Klick auf "⚙️" → Auto-Collapse einstellen (0-300s)
+4. **Auto-Reload:** Widget aktualisiert sich automatisch bei Änderungen (alle 10s)
 
 ## 📊 Daten-Speicherung
 
@@ -96,44 +98,42 @@ aspect_ratio: 100%
 
 **Gemeinsame Daten:**
 - Admin-Version: Lesen + Schreiben
-- Widget-Version: Nur Lesen
-- Änderungen im Admin sind sofort im Widget sichtbar
+- Widget-Version: Nur Lesen + Auto-Reload bei Änderungen
+- Änderungen im Admin sind automatisch im Widget sichtbar (max. 10s)
 
-## 🔄 Update von v0.3.x
+## 🔄 Update
 
-1. Via HACS updaten (automatisch)
-2. Home Assistant neu starten
-3. HTML-Dateien werden automatisch aktualisiert
-4. **Daten bleiben erhalten!** (localStorage)
+### Via HACS
+1. HACS → Integrationen → Release Notes Manager
+2. Update auf v0.4.1
+3. Home Assistant neu starten
+4. **Fertig!** Widget lädt sich automatisch neu
 
-## 🆕 Changelog v0.4.0
+### Von v0.4.0 zu v0.4.1
+- ✅ Widget: Auto-Reload Feature (erkennt Änderungen automatisch)
+- ✅ Widget: Kein Platzhalter mehr für nicht-sichtbare Releases
+- ✅ Daten bleiben erhalten
 
-### Features (1-11)
+## 🆕 Changelog v0.4.1
 
-1. **Löschen-Button** - Im Bearbeitungs-Modal
-2. **Pencil Icon** - ✏️ statt "Bearbeiten"-Text
-3. **Zahnrad-Symbol** - ⚙️ statt "Kategorien verwalten"
-4. **Alphabetische Sortierung** - Alle Kategorien-Dropdowns
-5. **Farbwähler** - 11 Farben mit Popup
-6. **Neue Einträge oben** - unshift statt push
-7. **Badge-Ausrichtung** - Einheitlich w-40, pl-3
-8. **Blauer Header** - Neuestes Release hervorgehoben
-9. **Summary Badges** - Features/Änderungen/Fehler im Header
-10. **Details togglebar** - Ein-/ausklappbar
-11. **Pagination** - 10 + "Weitere laden"
+### Widget v0.1.2 (NEU!)
 
-### Widget v0.1.0 (NEU!)
+**Auto-Reload Feature:**
+- ✅ Widget checkt alle 10 Sekunden localStorage
+- ✅ Automatisches Neu-Laden bei Änderungen
+- ✅ CPU-Last: 0.00011% (vernachlässigbar)
+- ✅ Keine manuelle URL-Änderung mehr nötig
+- ✅ Funktioniert auch in Side Panel
 
-- Read-Only Version
-- Auto-Collapse (0-300s)
-- Smart Display Logic
-- Settings-Panel
+**Fixes:**
+- ✅ Kein Platzhalter für nicht-sichtbare Releases
+- ✅ Kompaktere Darstellung
 
 Siehe [CHANGELOG.md](CHANGELOG.md) für Details.
 
 ## 🐛 Bekannte Probleme
 
-Keine bekannten Probleme in v0.4.0.
+Keine bekannten Probleme in v0.4.1.
 
 ## 📝 Lizenz
 
@@ -141,7 +141,7 @@ MIT License - siehe [LICENSE](LICENSE)
 
 ## 👤 Autor
 
-Entwickelt für Home Assistant Community
+Entwickelt von atheile-ha für Home Assistant Community
 
 ## 🤝 Beitragen
 

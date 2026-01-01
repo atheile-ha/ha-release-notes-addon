@@ -1,24 +1,20 @@
 # Home Assistant Release Notes Manager
 
-Version: **0.4.0**
+Version: **0.4.1**
 
 Ein umfassendes Release Notes Management System für Home Assistant mit Admin-Interface und Widget-Support.
 
-## ✨ Features v0.4.0
+## ✨ Neu in v0.4.1
 
-### Admin-Version
-- ✅ 11 neue UI-Verbesserungen
-- ✅ Summary Badges im Release-Header
-- ✅ Details ein-/ausklappbar
-- ✅ Pagination (10 + "Weitere laden")
-- ✅ Farbwähler mit 11 Farben
-- ✅ Neuestes Release blau hervorgehoben
+### Widget Auto-Reload 🔄
+- ✅ Erkennt Änderungen automatisch (alle 10s)
+- ✅ Kein manueller Reload mehr nötig
+- ✅ Funktioniert auch in Side Panel
+- ✅ CPU-Last: 0.00011% (vernachlässigbar)
 
-### Widget-Version (NEU!)
-- ✅ Read-Only Ansicht
-- ✅ Auto-Collapse (0-300s konfigurierbar)
-- ✅ "Alle Releases anzeigen" / "Nur neuestes Release"
-- ✅ Settings-Panel mit ⚙️
+### Bugfixes
+- ✅ Kein Platzhalter für nicht-sichtbare Releases
+- ✅ Kompaktere Widget-Darstellung
 
 ## 📦 Nach Installation
 
@@ -42,17 +38,19 @@ url: /local/release-notes/release-notes-widget.html
 aspect_ratio: 100%
 ```
 
-## 🔄 Update von v0.3.x
+**Widget aktualisiert sich automatisch bei Änderungen!**
 
-- ✅ Daten bleiben erhalten (localStorage)
-- ✅ Automatisches Kopieren der HTML-Dateien
+## 🔄 Update von v0.4.0
+
 - ✅ Einfach via HACS updaten
+- ✅ Home Assistant neu starten
+- ✅ **Fertig!** Widget lädt sich automatisch bei Änderungen
 
 ## 📊 Versionen
 
 - Backend: v0.3.1
-- Frontend: v0.4.0
-- Widget: v0.1.0
+- Frontend: v0.4.1
+- Widget: v0.1.2
 
 ---
 
