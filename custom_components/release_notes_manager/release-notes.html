@@ -4,7 +4,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="version" content="0.4.0">
+  <meta name="version" content="0.4.2">
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -228,7 +228,7 @@
             </svg>
             <div>
               <h1 class="text-2xl font-bold">Home Assistant Release Notes Manager</h1>
-              <p class="text-sm text-gray-500" id="save-status"></p>
+              <p class="text-sm text-gray-500">Daten werden lokal gespeichert</p>
             </div>
           </div>
           <div class="flex gap-3">
@@ -263,7 +263,7 @@ const CATEGORY_COLORS = [
 
 const state={releases:[],knownIssues:[],categories:[{id:'general',label:'Allgemein',color:'bg-gray-200 text-gray-800'},{id:'heating',label:'Heizung',color:'bg-orange-100 text-orange-800'},{id:'energy',label:'Energie',color:'bg-green-100 text-green-800'},{id:'automation',label:'Automation',color:'bg-blue-600 text-white'},{id:'device',label:'Gerät',color:'bg-purple-100 text-purple-800'},{id:'integration',label:'Integration',color:'bg-pink-100 text-pink-800'}],expandedReleases:new Set(),expandedDetails:new Set(),displayCount:10,searchTerm:'',filterCategory:'all',editingRelease:null,editingCatId:null,editingCatLabel:'',resolvingIssueId:null,resolvingSolution:'',resolveVersion:''};
 function formatDateDE(d){if(!d)return'';const[y,m,day]=d.split('-');return`${day}.${m}.${y}`}
-async function loadData(){console.log('📥 Lade Daten...');try{const r=await fetch('/local/release_data.json?t='+Date.now());if(r.ok){const d=await r.json();console.log('✅ Geladen:',d);state.releases=d.releases||[];state.knownIssues=d.knownIssues||[];state.categories=d.categories||state.categories}}catch(e){console.log('ℹ️ Erstmalige Nutzung')}render()}
+function loadData(){console.log('📥 Lade Daten aus localStorage...');try{const stored=localStorage.getItem('ha_releases');const storedCats=localStorage.getItem('ha_categories');if(stored){state.releases=JSON.parse(stored);console.log('✅ Releases geladen:',state.releases.length)}if(storedCats){state.categories=JSON.parse(storedCats);console.log('✅ Kategorien geladen:',state.categories.size)}}catch(e){console.log('ℹ️ Erstmalige Nutzung oder Fehler:',e)}render()}
 
 // Migriere alte Farbklassen zu neuen
 function migrateColorClasses() {
@@ -293,8 +293,8 @@ function migrateColorClasses() {
     saveData();
   }
 }
-async function saveData(){console.log('💾 Speichere...');setSaveStatus('Speichere...');const d={releases:state.releases,knownIssues:state.knownIssues,categories:state.categories,lastUpdate:new Date().toISOString()};try{const r=await fetch('/api/release_notes_manager/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:JSON.stringify(d)})});if(r.ok){console.log('✅ Gespeichert');setSaveStatus('✅ Gespeichert!');setTimeout(()=>setSaveStatus(''),3000);return true}throw new Error(`API ${r.status}`)}catch(e){console.error('❌ Fehler:',e);setSaveStatus('❌ Fehler!');alert(`Speichern fehlgeschlagen!\n\n${e.message}`);return false}}
-function setSaveStatus(t){document.getElementById('save-status').textContent=t}
+function saveData(){console.log('💾 Speichere in localStorage...');try{localStorage.setItem('ha_releases',JSON.stringify(state.releases));localStorage.setItem('ha_categories',JSON.stringify([...state.categories]));console.log('✅ Gespeichert:',state.releases.length,'Releases');return true}catch(e){console.error('❌ Fehler:',e);alert(`Speichern fehlgeschlagen!\n\n${e.message}\n\nTipp: localStorage voll? Alte Daten löschen.`);return false}}
+// setSaveStatus entfernt - nicht mehr benötigt
 function createNewRelease(){const today=new Date().toISOString().split('T')[0];const open=state.knownIssues.filter(i=>i.status!=='resolved');const inherited=open.map(i=>({...JSON.parse(JSON.stringify(i)),inheritedFrom:true}));console.log(`📋 Übernehme ${inherited.length} offene Fehler`);state.editingRelease={id:Date.now(),version:'',name:'',date:today,features:[],changes:[],knownIssues:inherited,comments:''};showModal('release')}
 async function saveRelease(){if(!state.editingRelease||!state.editingRelease.version){alert('Bitte Version eingeben!');return}state.editingRelease.knownIssues=state.editingRelease.knownIssues.map(i=>{const c={...i};delete c.inheritedFrom;return c});const isNew=!state.releases.find(r=>r.id===state.editingRelease.id);state.releases=isNew?[state.editingRelease,...state.releases]:state.releases.map(r=>r.id===state.editingRelease.id?state.editingRelease:r);state.knownIssues=state.editingRelease.knownIssues;if(await saveData()){hideModal();state.editingRelease=null;render()}}
 function editRelease(id){state.editingRelease=JSON.parse(JSON.stringify(state.releases.find(r=>r.id===id)));showModal('release')}
@@ -434,7 +434,7 @@ loadData();
 
   <!-- Versions-Anzeige -->
   <div style="position: fixed; bottom: 10px; left: 10px; font-size: 11px; color: #9ca3af; font-family: monospace; z-index: 1000;">
-    Backend: v0.3.1 | Frontend: v0.4.0
+    Frontend: v0.4.2
   </div>
 </body>
 </html>

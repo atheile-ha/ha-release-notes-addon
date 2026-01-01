@@ -1,11 +1,12 @@
 """
-Home Assistant Release Notes Manager v0.4.0
+Home Assistant Release Notes Manager v0.4.2
 
 A comprehensive release notes management system with frontend and widget support.
 """
 import logging
 import os
 from pathlib import Path
+import shutil
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -13,7 +14,7 @@ from homeassistant.core import HomeAssistant
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = "release_notes_manager"
-VERSION = "0.4.0"
+VERSION = "0.4.2"
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
@@ -27,22 +28,38 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     # Ensure www/release-notes directory exists
     release_notes_path.mkdir(parents=True, exist_ok=True)
     
-    # Copy HTML files if they don't exist
+    # Copy HTML files - ALWAYS overwrite to ensure updates are applied
     integration_path = Path(__file__).parent
     
+    files_copied = 0
     for filename in ["release-notes.html", "release-notes-widget.html"]:
         source = integration_path / filename
         target = release_notes_path / filename
         
-        if source.exists() and not target.exists():
-            import shutil
-            shutil.copy(source, target)
-            _LOGGER.info("Copied %s to www/release-notes/", filename)
+        if source.exists():
+            try:
+                shutil.copy2(source, target)  # copy2 preserves metadata
+                files_copied += 1
+                _LOGGER.info("Copied %s to www/release-notes/ (updated)", filename)
+            except Exception as e:
+                _LOGGER.error("Failed to copy %s: %s", filename, str(e))
+        else:
+            _LOGGER.warning("Source file not found: %s", filename)
     
-    _LOGGER.info(
-        "Release Notes Manager is ready! "
-        "Access at: /local/release-notes/release-notes.html"
-    )
+    if files_copied > 0:
+        _LOGGER.info(
+            "Release Notes Manager v%s is ready! "
+            "Copied %d file(s). "
+            "Access at: /local/release-notes/release-notes.html",
+            VERSION,
+            files_copied
+        )
+    else:
+        _LOGGER.warning(
+            "Release Notes Manager v%s loaded but no files were copied. "
+            "Check integration installation.",
+            VERSION
+        )
     
     return True
 
