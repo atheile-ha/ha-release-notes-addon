@@ -1,150 +1,166 @@
 # Home Assistant Release Notes Manager
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
-[![GitHub Release](https://img.shields.io/github/release/atheile-ha/ha-release-notes-addon.svg)](https://github.com/atheile-ha/ha-release-notes-addon/releases)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+[![GitHub release](https://img.shields.io/github/release/atheile-ha/ha-release-notes-manager.svg)](https://github.com/atheile-ha/ha-release-notes-manager/releases)
+[![License](https://img.shields.io/github/license/atheile-ha/ha-release-notes-manager.svg)](LICENSE)
 
-Web-Anwendung zur Verwaltung von Release Notes direkt in Home Assistant.
+Ein umfassendes Release Notes Management System für Home Assistant mit Admin-Interface und Widget-Support.
 
-## ✨ Features (v0.4.0)
+**Version:** v0.4.0 (Frontend) / v0.3.1 (Backend) / v0.1.0 (Widget)
 
-### Release-Verwaltung
-- Releases erstellen, bearbeiten und löschen
-- Versionierung mit Release-Nummern
-- Optionaler Release-Name
-- Deutsches Datumsformat
-- **Release Summary** - Kompakte Übersicht (Features • Bugs • Status)
-- **Markdown Export** - Exportiere Releases als .md Datei
+![Release Notes Manager](https://via.placeholder.com/800x400/2563eb/ffffff?text=Release+Notes+Manager+v0.4.0)
 
-### Kategorisierung
-- Neue Features dokumentieren
-- Änderungen / Bugfixes festhalten
-- Bekannte Fehler tracken
-- 6 vordefinierte Kategorien
-- Eigene Kategorien erstellen
-- **Alphabetische Sortierung** der Kategorien
+## 🌟 Features
 
-### Bedienung
-- **Keyboard Shortcuts** - Strg+S (Speichern), ESC (Schließen)
-- **Dark Mode** - Automatische Anpassung an System-Theme
-- **Neue Einträge oben** - Features/Bugs erscheinen am Anfang
-- **Pencil Icon** - Kompakter ✏️ Bearbeiten-Button
-- **Loading Indicator** - Visuelles Feedback beim Speichern
-- Suchfunktion über alle Releases
-- Filter nach Kategorien
-- Responsive Design
-- 100% offline
+### Admin-Version (release-notes.html)
 
-### Fehler-Management
-- Automatische Übernahme offener Fehler
-- Fehler als gelöst markieren
-- Historie bleibt sichtbar
-- Gelöste Fehler wieder öffnen
+- ✅ **Release-Verwaltung** - Erstellen, Bearbeiten, Löschen von Releases
+- ✅ **Kategorien-System** - 11 Farben, individuell anpassbar
+- ✅ **Features, Änderungen, Bekannte Fehler** - Strukturierte Erfassung
+- ✅ **Details ein-/ausklappbar** - Übersichtliche Darstellung
+- ✅ **Summary Badges** - Schneller Überblick im Header (Features/Änderungen/Fehler)
+- ✅ **Pagination** - Initial 10 Releases, "Weitere laden" Button
+- ✅ **Suchfunktion** - Durchsucht alle Releases
+- ✅ **Filter** - Nach Kategorien filtern
+- ✅ **Neuestes Release hervorgehoben** - Blauer Header
+- ✅ **LocalStorage** - Persistente Speicherung
+- ✅ **Cache-Busting** - Automatische Updates
 
-### Datensicherheit
-- Automatisches Backup-System
-- Persistente Speicherung in JSON
-- Daten bleiben bei Updates erhalten
+### Widget-Version (release-notes-widget.html) 🆕
 
-## 📥 Installation
+- ✅ **Read-Only** - Nur Anzeige, keine Bearbeitungsmöglichkeit
+- ✅ **Auto-Collapse** - Konfigurierbar (0, 10-300s)
+- ✅ **Smart Display** - Nur neuestes Release initial
+- ✅ **"Alle Releases anzeigen"** - Button lädt alle auf einmal
+- ✅ **"Nur neuestes Release"** - Zurück zur Einzelansicht
+- ✅ **Settings-Panel** - ⚙️ mit Slider für Auto-Collapse
+- ✅ **Timer-Logik** - Stoppt bei Interaktion, startet neu bei Collapse
+- ✅ **Gleiche Daten** - Nutzt localStorage der Admin-Version
 
-### Via HACS
+## 📦 Installation
+
+### Via HACS (Empfohlen)
 
 1. HACS öffnen
-2. ⋮ → "Benutzerdefinierte Repositories"
-3. URL: `https://github.com/atheile-ha/ha-release-notes-addon`
-4. Kategorie: `Integration`
-5. Suche "Release Notes Manager" → Download
-6. Home Assistant neu starten
+2. "Integrationen" → ⋮ → "Benutzerdefinierte Repositorys"
+3. Repository hinzufügen:
+   - URL: `https://github.com/atheile-ha/ha-release-notes-manager`
+   - Kategorie: Integration
+4. "Release Notes Manager" suchen und installieren
+5. Home Assistant neu starten
 
-### Konfiguration
+### Manuell
 
-`configuration.yaml`:
-```yaml
-release_notes_manager:
+1. `custom_components/release_notes_manager/` Ordner in `/config/custom_components/` kopieren
+2. Home Assistant neu starten
+3. HTML-Dateien werden automatisch nach `/config/www/release-notes/` kopiert
+
+## 🚀 Verwendung
+
+### Admin-Version
+
+**URL:**
+```
+http://DEINE-IP:8123/local/release-notes/release-notes.html
 ```
 
-Dann Home Assistant neu starten.
+**Funktionen:**
+1. **Neues Release:** Klick auf "+ Neues Release"
+2. **Kategorien:** Klick auf "⚙️" im Header
+3. **Bearbeiten:** Klick auf "✏️" beim Release
+4. **Details:** Klick auf "▶ Details anzeigen"
 
-### Zugriff
+### Widget-Version
 
+**URL:**
 ```
-http://YOUR-HA-IP:8123/local/release-notes/release-notes.html
+http://DEINE-IP:8123/local/release-notes/release-notes-widget.html
 ```
 
-### Dashboard Integration
+**Dashboard-Integration:**
 
 ```yaml
 type: iframe
-url: /local/release-notes/release-notes.html
+url: /local/release-notes/release-notes-widget.html
 aspect_ratio: 100%
 ```
 
-## 🎹 Keyboard Shortcuts
+**Funktionen:**
+1. **Alle laden:** Klick auf "Alle Releases anzeigen"
+2. **Zurück:** Klick auf "Nur neuestes Release"
+3. **Settings:** Klick auf "⚙️" → Auto-Collapse einstellen (0-300s)
 
-- **Strg+S** - Speichern
-- **ESC** - Modals schließen
+## 📊 Daten-Speicherung
 
-## 📤 Markdown Export
+**LocalStorage:**
+- `ha_releases` - Release-Daten
+- `ha_categories` - Kategorien
 
-Exportiere einzelne Releases als Markdown-Datei:
-- Button "📄 Export MD" bei jedem Release
-- Ideal für GitHub Releases
-- Perfekt für Dokumentation
+**Gemeinsame Daten:**
+- Admin-Version: Lesen + Schreiben
+- Widget-Version: Nur Lesen
+- Änderungen im Admin sind sofort im Widget sichtbar
 
-## 🌙 Dark Mode
+## 🔄 Update von v0.3.x
 
-Automatische Unterstützung für Dark Mode basierend auf System-Einstellung. Alle Texte sind optimal lesbar.
-
-## 🆕 Neue Einträge oben
-
-Neu hinzugefügte Features, Änderungen und Bugs erscheinen automatisch am Anfang der jeweiligen Liste - nicht am Ende wie früher.
-
-## 🔍 Troubleshooting
-
-### Integration lädt nicht
-1. Prüfe `configuration.yaml`
-2. Prüfe Logs: Einstellungen → System → Protokolle
-3. Suche nach `release_notes_manager`
-
-### Seite zeigt 404
-1. Prüfe Datei: `/config/custom_components/release_notes_manager/www/release-notes.html`
+1. Via HACS updaten (automatisch)
 2. Home Assistant neu starten
-3. Browser-Cache leeren (Strg+Shift+R)
+3. HTML-Dateien werden automatisch aktualisiert
+4. **Daten bleiben erhalten!** (localStorage)
 
-### Dark Mode unleserlich
-- Stelle sicher dass v0.4.0 installiert ist
-- Browser Hard Reload: Strg+Shift+R
-- Prüfe Version im Tab-Titel (sollte "v0.4.0" zeigen)
+## 🆕 Changelog v0.4.0
 
-### Features nicht sichtbar
-1. Prüfe Version: `cat /config/custom_components/release_notes_manager/manifest.json | grep version`
-2. Sollte zeigen: `"version": "0.4.0"`
-3. Force-Copy: `cp /config/custom_components/release_notes_manager/www/release-notes.html /config/www/release-notes/`
-4. Browser: Strg+Shift+R
+### Features (1-11)
 
-## 📊 Technische Details
+1. **Löschen-Button** - Im Bearbeitungs-Modal
+2. **Pencil Icon** - ✏️ statt "Bearbeiten"-Text
+3. **Zahnrad-Symbol** - ⚙️ statt "Kategorien verwalten"
+4. **Alphabetische Sortierung** - Alle Kategorien-Dropdowns
+5. **Farbwähler** - 11 Farben mit Popup
+6. **Neue Einträge oben** - unshift statt push
+7. **Badge-Ausrichtung** - Einheitlich w-40, pl-3
+8. **Blauer Header** - Neuestes Release hervorgehoben
+9. **Summary Badges** - Features/Änderungen/Fehler im Header
+10. **Details togglebar** - Ein-/ausklappbar
+11. **Pagination** - 10 + "Weitere laden"
 
-**Anforderungen:**
-- Home Assistant 2024.1.0+
-- Browser: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+### Widget v0.1.0 (NEU!)
 
-**Performance:**
-- Dateigröße: ~33 KB (HTML)
-- Ladezeit: < 100ms
-- Empfohlen: Max. 100-200 Releases
+- Read-Only Version
+- Auto-Collapse (0-300s)
+- Smart Display Logic
+- Settings-Panel
 
-**API:**
-```
-GET  /local/release_data.json
-POST /api/release_notes_manager/save
-```
+Siehe [CHANGELOG.md](CHANGELOG.md) für Details.
 
-## 💬 Support
+## 🐛 Bekannte Probleme
 
-- [GitHub Repository](https://github.com/atheile-ha/ha-release-notes-addon)
-- [Issues](https://github.com/atheile-ha/ha-release-notes-addon/issues)
-- [Discussions](https://github.com/atheile-ha/ha-release-notes-addon/discussions)
+Keine bekannten Probleme in v0.4.0.
 
-## 📝 Changelog
+## 📝 Lizenz
 
-Siehe [CHANGELOG.md](CHANGELOG.md) für Details zu allen Versionen.
+MIT License - siehe [LICENSE](LICENSE)
+
+## 👤 Autor
+
+Entwickelt für Home Assistant Community
+
+## 🤝 Beitragen
+
+Issues und Pull Requests sind willkommen!
+
+1. Fork das Repository
+2. Erstelle einen Feature-Branch
+3. Commit deine Änderungen
+4. Push zum Branch
+5. Erstelle einen Pull Request
+
+## ⭐ Support
+
+Wenn dir dieses Projekt gefällt, gib ihm einen Stern! ⭐
+
+---
+
+**Bei Fragen oder Problemen:**
+- [Issue erstellen](https://github.com/atheile-ha/ha-release-notes-manager/issues)
+- [Diskussionen](https://github.com/atheile-ha/ha-release-notes-manager/discussions)
