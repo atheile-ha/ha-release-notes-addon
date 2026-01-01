@@ -8,8 +8,6 @@ Ein umfassendes Release Notes Management System für Home Assistant mit Admin-In
 
 **Version:** v0.4.0 (Frontend) / v0.3.1 (Backend) / v0.1.0 (Widget)
 
-![Release Notes Manager](https://via.placeholder.com/800x400/2563eb/ffffff?text=Release+Notes+Manager+v0.4.0)
-
 ## 🌟 Features
 
 ### Admin-Version (release-notes.html)
