@@ -1,7 +1,5 @@
 {
   "name": "Release Notes Manager",
   "hacs": "1.6.0",
-  "domains": ["release_notes_manager"],
-  "iot_class": "Local Push",
   "homeassistant": "2023.1.0"
 }
