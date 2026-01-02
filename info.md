@@ -62,7 +62,7 @@ Ein elegantes Tool zur Verwaltung und Anzeige von Release Notes direkt in Home A
 
 1. HACS öffnen
 2. "Integrationen" → Menü (⋮) → "Benutzerdefinierte Repositories"
-3. Repository hinzufügen: `https://github.com/DEIN-USERNAME/ha-release-notes-manager`
+3. Repository hinzufügen: `https://github.com/atheile-ha/ha-release-notes-manager`
 4. Kategorie: "Integration"
 5. "Release Notes Manager" suchen und installieren
 6. Home Assistant neu starten
@@ -321,7 +321,7 @@ fetch('/api/release_notes_manager/data')
 
 ## 🤝 Support
 
-- **GitHub Issues:** [Repository Issues](https://github.com/DEIN-USERNAME/ha-release-notes-manager/issues)
+- **GitHub Issues:** [Repository Issues](https://github.com/atheile-ha/ha-release-notes-manager/issues)
 - **Dokumentation:** [UPGRADE_v0.5.0.md](UPGRADE_v0.5.0.md)
 - **Technische Details:** [TECHNICAL_CHANGES_v0.5.0.md](TECHNICAL_CHANGES_v0.5.0.md)
 
