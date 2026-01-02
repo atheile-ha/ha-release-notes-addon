@@ -1,104 +1,100 @@
-"""Release Notes Manager Integration v0.4.0"""
+"""Release Notes Manager Integration v0.5.0 - HA-konform modernisiert."""
 import logging
 from pathlib import Path
-import shutil
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.components.http import StaticPathConfig
+
 from .storage import get_storage
 from .api import register_api_views
 
 _LOGGER = logging.getLogger(__name__)
 DOMAIN = "release_notes_manager"
-VERSION = "0.4.0"
+VERSION = "0.5.0"
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
-    """Set up the Release Notes Manager component."""
+    """
+    Set up the Release Notes Manager component.
+    
+    Changes in v0.5.0:
+    - Removed HTML file copying to /config/www
+    - Frontend assets now served directly from integration
+    - Storage migrated to HA-Storage (/config/.storage)
+    - Automatic migration from old /config/www/release_data.json
+    """
     
     _LOGGER.info("Setting up Release Notes Manager v%s", VERSION)
     
-    # Get configuration
-    conf = config.get(DOMAIN, {})
-    storage_type = conf.get('storage', 'json')
-    require_token = conf.get('require_token', False)
+    # Initialize HA-Storage (with automatic migration)
+    storage = get_storage(hass)
     
-    _LOGGER.info("Configuration - Storage: %s, Token required: %s", 
-                storage_type, require_token)
+    # Trigger migration by loading data once
+    # Migration happens transparently in storage.async_load()
+    await storage.async_load()
     
-    # Initialize storage
-    storage = get_storage(hass, storage_type)
-    
-    # Store in hass.data for access from other components
+    # Store in hass.data for access from API
     hass.data[DOMAIN] = {
         'storage': storage,
-        'require_token': require_token
     }
     
-    # Deploy HTML files
-    await deploy_www_files(hass)
+    # Register static frontend assets (served from integration)
+    await async_register_static_paths(hass)
     
     # Register API endpoints
-    register_api_views(hass, storage, require_token)
+    register_api_views(hass, storage)
     
     _LOGGER.info("Release Notes Manager v%s setup complete", VERSION)
+    _LOGGER.info(
+        "Access Admin at: /release-notes/release-notes.html"
+    )
+    _LOGGER.info(
+        "Access Widget at: /release-notes/release-notes-widget.html"
+    )
     
     return True
 
 
-async def deploy_www_files(hass: HomeAssistant) -> bool:
-    """Deploy HTML files to www directory with cache-busting."""
-    try:
-        # Source: custom_components directory
-        integration_path = Path(__file__).parent
-        
-        # Destination: Home Assistant www directory
-        www_dest = Path(hass.config.path("www")) / "release-notes"
-        
-        # Create destination directory
-        www_dest.mkdir(parents=True, exist_ok=True)
-        
-        # Files to copy
-        files_to_copy = [
-            ('release-notes.html', 'Admin HTML'),
-            ('release-notes-widget.html', 'Widget HTML')
-        ]
-        
-        files_copied = 0
-        for filename, description in files_to_copy:
-            source = integration_path / filename
-            target = www_dest / filename
-            
-            if source.exists():
-                # ALWAYS copy (even if exists) to ensure updates
-                await hass.async_add_executor_job(shutil.copy2, source, target)
-                files_copied += 1
-                _LOGGER.info("Deployed %s to www/release-notes/ (updated)", description)
-            else:
-                _LOGGER.warning("Source file not found: %s", filename)
-        
-        if files_copied > 0:
-            _LOGGER.info(
-                "Release Notes Manager v%s deployed %d file(s). "
-                "Access at: /local/release-notes/release-notes.html",
-                VERSION, files_copied
-            )
-            return True
-        else:
-            _LOGGER.warning(
-                "No files were copied. Check integration installation."
-            )
-            return False
-            
-    except Exception as e:
-        _LOGGER.error("Error deploying www files: %s", str(e))
-        return False
+async def async_register_static_paths(hass: HomeAssistant) -> None:
+    """
+    Register static frontend assets to be served by HA HTTP server.
+    
+    Technical Decision: StaticPathConfig vs Panel
+    - StaticPathConfig chosen because:
+      * Simple file serving without HA sidebar integration
+      * Allows direct URL access (/release-notes/...)
+      * No need for panel registration (sidebar clutter)
+      * Compatible with iframe dashboard cards
+      * Follows HA best practice for custom frontend assets
+    
+    Assets are served directly from integration directory:
+    - /release-notes/release-notes.html (Admin)
+    - /release-notes/release-notes-widget.html (Widget)
+    
+    No files are copied to /config/www anymore.
+    """
+    integration_path = Path(__file__).parent
+    
+    # Register static path for frontend assets
+    await hass.http.async_register_static_paths([
+        StaticPathConfig(
+            url_path="/release-notes",
+            path=str(integration_path),
+            cache_headers=False  # Always serve latest version (no cache)
+        )
+    ])
+    
+    _LOGGER.info(
+        "Frontend assets registered: /release-notes/ → %s",
+        integration_path
+    )
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up from a config entry."""
+    """Set up from a config entry (future use)."""
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Unload a config entry."""
+    """Unload a config entry (future use)."""
     return True

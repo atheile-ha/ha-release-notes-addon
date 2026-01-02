@@ -1,26 +1,49 @@
-"""REST API endpoints for Release Notes Manager."""
+"""REST API endpoints for Release Notes Manager v0.5.0."""
 import logging
+import json
 from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
 
-class ReleaseNotesBaseView(HomeAssistantView):
-    """Base view for Release Notes API."""
+
+class ReleaseNotesDataView(HomeAssistantView):
+    """
+    Handle /api/release_notes_manager/data
+    - GET to load data
+    - POST to save data
     
-    def __init__(self, hass: HomeAssistant, storage, require_token: bool):
-        """Initialize base view."""
+    Changed in v0.5.0: Uses HA-Storage instead of direct file access.
+    """
+    
+    url = "/api/release_notes_manager/data"
+    name = "api:release_notes_manager:data"
+    requires_auth = False  # Local-only usage
+    
+    def __init__(self, hass: HomeAssistant, storage):
+        """Initialize view."""
         self._hass = hass
         self._storage = storage
-        self.requires_auth = require_token
-
-
-class DataView(ReleaseNotesBaseView):
-    """Handle /api/release_notes_manager/save - POST to save data."""
     
-    url = "/api/release_notes_manager/save"
-    name = "api:release_notes_manager:save"
+    async def get(self, request):
+        """Load all data from HA-Storage."""
+        try:
+            data = await self._storage.async_load()
+            
+            # Return data with CORS headers for local access
+            return web.json_response(data, headers={
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            })
+        
+        except Exception as e:
+            _LOGGER.error("Error loading data: %s", str(e))
+            return web.json_response(
+                {"error": str(e)},
+                status=500
+            )
     
     async def post(self, request):
         """Save all data (bulk update)."""
@@ -34,8 +57,15 @@ class DataView(ReleaseNotesBaseView):
                     status=400
                 )
             
-            import json
-            data = json.loads(data_str)
+            # Parse release data
+            try:
+                data = json.loads(data_str)
+            except json.JSONDecodeError as e:
+                _LOGGER.error("Invalid JSON data: %s", str(e))
+                return web.json_response(
+                    {"error": f"Invalid JSON: {str(e)}"},
+                    status=400
+                )
             
             # Validate structure
             if not isinstance(data, dict):
@@ -44,7 +74,8 @@ class DataView(ReleaseNotesBaseView):
                     status=400
                 )
             
-            success = await self._storage.save_all_data(data)
+            # Save to HA-Storage
+            success = await self._storage.async_save(data)
             
             if success:
                 return web.json_response({
@@ -60,19 +91,21 @@ class DataView(ReleaseNotesBaseView):
                 )
         
         except Exception as e:
-            _LOGGER.error("Error saving data: %s", str(e))
+            _LOGGER.error("Error in API endpoint: %s", str(e))
             return web.json_response(
                 {"error": str(e)},
                 status=500
             )
 
 
-def register_api_views(hass: HomeAssistant, storage, require_token: bool = False):
-    """Register all API views."""
-    views = [
-        DataView(hass, storage, require_token),
-    ]
+def register_api_views(hass: HomeAssistant, storage) -> None:
+    """
+    Register all API views.
     
-    for view in views:
-        hass.http.register_view(view)
-        _LOGGER.info("Registered API view: %s (auth: %s)", view.url, require_token)
+    Changed in v0.5.0: 
+    - Removed require_token parameter (always False for local use)
+    - Added GET endpoint for data loading
+    """
+    view = ReleaseNotesDataView(hass, storage)
+    hass.http.register_view(view)
+    _LOGGER.info("Registered API view: %s (GET + POST)", view.url)

@@ -6,7 +6,24 @@
 
 Ein umfassendes Release Notes Management System für Home Assistant mit Admin-Interface und Widget-Support.
 
-**Version:** v0.4.0
+**Version:** v0.5.0
+
+## 🆕 Neu in v0.5.0 - Architecture Modernization
+
+v0.5.0 modernisiert die Integration nach **Home Assistant Best Practices**:
+
+✅ **HA-Storage** statt `/config/www/` - Offizielle Storage-API  
+✅ **Frontend direkt aus Integration** - Keine Kopien mehr  
+✅ **Automatische Migration** - Kein Datenverlust beim Update  
+✅ **Update-sicher** - HACS überschreibt einfach  
+✅ **Keine Cache-Probleme** - Immer aktuelle Version  
+
+**⚠️ Breaking Change:** URLs haben sich geändert!  
+`/local/release-notes/...` → `/release-notes/...`
+
+**📖 Upgrade-Guide:** Siehe [UPGRADE_v0.5.0.md](UPGRADE_v0.5.0.md)
+
+---
 
 ## 🌟 Features
 
@@ -20,7 +37,7 @@ Ein umfassendes Release Notes Management System für Home Assistant mit Admin-In
 - ✅ **Pagination** - Initial 10 Releases, "Weitere laden" Button
 - ✅ **Neuestes Release hervorgehoben** - Blauer Header
 - ✅ **Delete-Button** - Mit Icon 🗑️
-- ✅ **Backend-Persistenz** - Speicherung in /config/www/release_data.json
+- ✅ **HA-Storage** - Automatische Backups, Atomic Writes
 
 ### Widget-Version (release-notes-widget.html)
 
@@ -32,6 +49,8 @@ Ein umfassendes Release Notes Management System für Home Assistant mit Admin-In
 - ✅ **"Nur neuestes Release"** - Zurück zur Einzelansicht
 - ✅ **Settings-Panel** - ⚙️ mit Slider für Auto-Collapse
 - ✅ **Kein Platzhalter** - Expandiert nur bei Bedarf
+
+---
 
 ## 📦 Installation
 
@@ -49,7 +68,9 @@ Ein umfassendes Release Notes Management System für Home Assistant mit Admin-In
 
 1. `custom_components/release_notes_manager/` Ordner in `/config/custom_components/` kopieren
 2. Home Assistant neu starten
-3. HTML-Dateien werden automatisch nach `/config/www/release-notes/` kopiert
+3. Frontend wird automatisch registriert
+
+---
 
 ## 🚀 Verwendung
 
@@ -57,7 +78,7 @@ Ein umfassendes Release Notes Management System für Home Assistant mit Admin-In
 
 **URL:**
 ```
-http://DEINE-IP:8123/local/release-notes/release-notes.html?
+http://DEINE-IP:8123/release-notes/release-notes.html?
 ```
 
 **Tipp:** Das `?` am Ende verhindert Browser-Cache und zeigt immer die neueste Version!
@@ -73,7 +94,7 @@ http://DEINE-IP:8123/local/release-notes/release-notes.html?
 
 **URL:**
 ```
-http://DEINE-IP:8123/local/release-notes/release-notes-widget.html?
+http://DEINE-IP:8123/release-notes/release-notes-widget.html?
 ```
 
 **Tipp:** Das `?` am Ende verhindert Browser-Cache!
@@ -82,7 +103,7 @@ http://DEINE-IP:8123/local/release-notes/release-notes-widget.html?
 
 ```yaml
 type: iframe
-url: /local/release-notes/release-notes-widget.html?
+url: /release-notes/release-notes-widget.html?
 aspect_ratio: 200%
 ```
 
@@ -96,74 +117,113 @@ aspect_ratio: 200%
 3. **Settings:** Klick auf "⚙️" → Auto-Collapse einstellen (0-300s)
 4. **Auto-Reload:** Widget aktualisiert sich automatisch bei Änderungen (alle 10s)
 
+---
+
 ## 📊 Daten-Speicherung
 
-**Backend:**
-- Speicherort: `/config/www/release_data.json`
-- API: `/api/release_notes_manager/save`
-- Backup: Automatisch bei jedem Speichern
+**v0.5.0 (HA-Storage):**
+- Speicherort: `/config/.storage/release_notes_manager`
+- API: Offizielle `homeassistant.helpers.storage.Store`
+- Backup: Automatisch durch HA-Infrastruktur
+- Atomic Writes: Kein Datenverlust bei Crash
 
-**Cache:**
-- Dauer: 5 Minuten
-- Auto-Invalidierung bei Änderungen
+**Migration von v0.4.0:**
+- Alte Datei: `/config/www/release_data.json`
+- Wird automatisch migriert beim ersten Start
+- Gesichert als: `/config/www/release_data.json.migrated`
+- Rollback möglich (siehe Upgrade-Guide)
+
+---
 
 ## 🔄 Update
 
-### Via HACS
-1. HACS → Integrationen → Release Notes Manager
-2. Update auf v0.4.0
-3. Home Assistant neu starten
-4. **Fertig!** HTML-Dateien werden automatisch aktualisiert
+### Von v0.4.0 zu v0.5.0
 
-### Von v0.3.1 zu v0.4.0
-- ✅ Backend: Unverändert (100% kompatibel)
-- ✅ Frontend: 11 neue Features
-- ✅ Widget: Neu hinzugefügt
-- ✅ Daten bleiben erhalten
+**⚠️ WICHTIG:** URLs haben sich geändert!
 
-## 🆕 Changelog v0.4.0
+**Schritt 1:** Update via HACS
+```
+HACS → Integrationen → Release Notes Manager → Update auf v0.5.0
+```
 
-### Frontend v0.4.0 (11 Features)
+**Schritt 2:** HA neu starten
+```
+Einstellungen → System → Neustart
+```
 
-1. ✅ **Delete-Button mit Icon** (🗑️)
-2. ✅ **Icons für Kategorien** (🎨)
-3. ✅ **Sortierung** (Version, Datum, Kategorie)
-4. ✅ **Color-Picker** (11 Farben)
-5. ✅ **Badges** (Features/Änderungen/Fehler Count)
-6. ✅ **Neuestes Release** (Blauer Header)
-7. ✅ **Summary Badges** (Schnellübersicht)
-8. ✅ **Blue Header** (Highlight)
-9. ✅ **Weitere laden** (Pagination)
-10. ✅ **Details Toggle** (▶/▼)
-11. ✅ **Version Footer** (Backend/Frontend Version)
+**Schritt 3:** Dashboard YAML aktualisieren
+```yaml
+# ALT (v0.4.0)
+url: /local/release-notes/release-notes-widget.html?
 
-### Widget v0.1.2
+# NEU (v0.5.0)
+url: /release-notes/release-notes-widget.html?
+```
 
-- ✅ Auto-Reload (10s Intervall, CPU: 0.00011%)
-- ✅ Kein Platzhalter für nicht-sichtbare Releases
-- ✅ Kompakte Darstellung
+**Schritt 4:** Logs prüfen
+```
+Einstellungen → System → Protokolle
+Suche: "release_notes_manager"
 
-### Backend v0.3.1
+Sollte zeigen:
+✅ "Starting migration from www/release_data.json"
+✅ "Data migrated to HA-Storage successfully"
+✅ "Old file preserved as release_data.json.migrated"
+```
 
-- ✅ Unverändert (100% kompatibel)
-- ✅ REST API funktioniert weiterhin
+**Fertig!** Daten wurden automatisch migriert ✅
 
-### Fixes
+**Detaillierte Anleitung:** [UPGRADE_v0.5.0.md](UPGRADE_v0.5.0.md)
 
-- ✅ Cache-Problem behoben (HTML wird bei HA-Start aktualisiert)
-- ✅ Widget Platzhalter entfernt (min-height fix)
+---
+
+## 🆕 Changelog v0.5.0
+
+### ✨ Major Changes
+
+**HA-Storage Migration**
+- ✅ Daten in `/config/.storage/` (HA-Standard)
+- ✅ Automatische Backups
+- ✅ Atomic Writes
+
+**Frontend Modernisiert**
+- ✅ Direkt aus Integration ausgeliefert
+- ✅ Keine Kopien nach `/config/www/`
+- ✅ Update-sicher via HACS
+
+**Automatische Migration**
+- ✅ Beim ersten Start
+- ✅ Alte Datei gesichert
+- ✅ Kein Datenverlust
+
+### 🔧 Breaking Changes
+
+- URL-Änderung: `/local/release-notes/` → `/release-notes/`
+- Dashboard YAML muss aktualisiert werden
+
+**Vollständiges Changelog:** [CHANGELOG.md](CHANGELOG.md)
+
+---
 
 ## 🐛 Bekannte Probleme
 
-Keine bekannten Probleme in v0.4.0.
+Keine bekannten Probleme in v0.5.0.
+
+Bei Upgrade-Problemen: Siehe [UPGRADE_v0.5.0.md](UPGRADE_v0.5.0.md#-troubleshooting)
+
+---
 
 ## 📝 Lizenz
 
 MIT License - siehe [LICENSE](LICENSE)
 
+---
+
 ## 👤 Autor
 
 Entwickelt von atheile-ha für Home Assistant Community
+
+---
 
 ## 🤝 Beitragen
 
@@ -171,5 +231,18 @@ Issues und Pull Requests sind willkommen!
 
 ---
 
+## 🆘 Support
+
 **Bei Fragen oder Problemen:**
 - [Issue erstellen](https://github.com/atheile-ha/ha-release-notes-manager/issues)
+- Logs und Fehlermeldungen anhängen
+- Version angeben (v0.5.0)
+
+**Dokumentation:**
+- [Upgrade Guide](UPGRADE_v0.5.0.md) - Schritt-für-Schritt Anleitung
+- [Technical Changes](TECHNICAL_CHANGES_v0.5.0.md) - Entwickler-Details
+- [Best Practices](BEST_PRACTICES.md) - Tipps & Tricks (v0.4.0)
+
+---
+
+**Home Assistant konform seit v0.5.0!** ✅
