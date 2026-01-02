@@ -1,86 +1,76 @@
 # Changelog
 
-## [0.4.2] - 2026-01-02
+## [0.4.0] - 2026-01-02
 
-### 🐛 Kritische Bugfixes
+### ✨ Frontend Features (11 neue Features)
 
-#### Admin-Version: localStorage statt API
-**Problem:** Admin zeigte "Speichern fehlgeschlagen" mit API 404 Fehler
+**Feature 1-3: Delete & Icons**
+- ✅ Delete-Button mit 🗑️ Icon
+- ✅ Kategorie-Icons (🎨)
+- ✅ Sortierung (Version, Datum, Kategorie)
 
-**Ursache:**
-- saveData() versuchte zu speichern über `/api/release_notes_manager/save`
-- API existiert nicht (nur localStorage-basierte Lösung)
-- loadData() versuchte `/local/release_data.json` zu laden
+**Feature 4-6: Color & Badges**
+- ✅ Color-Picker für Kategorien (11 Farben)
+- ✅ Badge-System (Features/Änderungen/Fehler Count)
+- ✅ Neuestes Release hervorgehoben (Blauer Header)
 
-**Lösung:**
-```javascript
-// VORHER
-async function saveData() {
-  const r = await fetch('/api/release_notes_manager/save', {...});
-  // API 404 Error!
-}
+**Feature 7-9: Summary & Header**
+- ✅ Summary Badges im Header (Schnellübersicht)
+- ✅ Blue Header für neuestes Release
+- ✅ Pagination ("Weitere laden" Button)
 
-// NACHHER  
-function saveData() {
-  localStorage.setItem('ha_releases', JSON.stringify(state.releases));
-  localStorage.setItem('ha_categories', JSON.stringify([...state.categories]));
-  // Funktioniert perfekt!
-}
-```
+**Feature 10-11: Details & Version**
+- ✅ Details Toggle (▶/▼ statt Text)
+- ✅ Version Footer (Backend/Frontend Version)
 
-**Änderungen:**
-- ✅ `loadData()`: localStorage statt fetch()
-- ✅ `saveData()`: localStorage statt API call
-- ✅ Keine API 404 Fehler mehr
-- ✅ Sofortiges Speichern ohne Backend
-- ✅ Status-Text: "Daten werden lokal gespeichert"
+### 🆕 Widget v0.1.2
 
-#### Integration: Update-Fix
+**Auto-Reload Feature:**
+- ✅ Erkennt Änderungen automatisch (alle 10s)
+- ✅ CPU-Last: 0.00011% (vernachlässigbar)
+- ✅ Funktioniert in Side Panel
+- ✅ Max. Verzögerung: 10 Sekunden
 
-**Problem:** HTML-Dateien wurden bei Updates nicht überschrieben
+**Layout-Fixes:**
+- ✅ Kein Platzhalter für nicht-sichtbare Releases
+- ✅ Kompakte Darstellung
+- ✅ Expandiert nur bei Bedarf
 
-**Ursache in `__init__.py`:**
-```python
-# VORHER
-if source.exists() and not target.exists():
-    shutil.copy(source, target)
-# Kopiert NUR wenn Datei NICHT existiert
-# Bei Update: Alte Dateien bleiben!
-```
+### 🔧 Backend v0.3.1
 
-**Lösung:**
-```python
-# NACHHER
-if source.exists():
-    shutil.copy2(source, target)  # IMMER kopieren
-    _LOGGER.info("Copied %s (updated)", filename)
-```
+**Unverändert:**
+- ✅ 100% kompatibel mit v0.3.1
+- ✅ REST API funktioniert weiterhin
+- ✅ Storage in /config/www/release_data.json
+- ✅ Daten bleiben erhalten
 
-**Effekt:**
-- ✅ HTML-Dateien werden bei jedem HA-Start aktualisiert
+### 🐛 Fixes
+
+**Cache-Problem behoben:**
+- ✅ __init__.py kopiert HTML IMMER (auch wenn existiert)
+- ✅ Meta-Tag Version 0.4.0 für Cache-Busting
 - ✅ Updates funktionieren zuverlässig
-- ✅ Immer neueste Version aktiv
+- ✅ **Empfehlung:** Nutze `?` am URL-Ende für Dashboard (verhindert Browser-Cache)
 
-### 📊 Versionen
+**Widget-Layout:**
+- ✅ min-height aus .release-bottom-row entfernt
+- ✅ Kein Leerraum mehr für nicht-sichtbare Releases
+- ✅ **Empfehlung:** aspect_ratio: 200% für optimale Darstellung
 
-- **Admin:** v0.4.2 (localStorage-fix)
-- **Widget:** v0.1.2 (Auto-Reload)  
-- **Integration:** v0.4.2 (Update-fix)
+## [0.3.1] - 2024-12-15
 
-## [0.4.1] - 2026-01-02
+### Backend-Version (unverändert in v0.4.0)
 
-### 🆕 Widget v0.1.2 - Auto-Reload Feature
-[... siehe vorheriges Changelog ...]
-
-## [0.4.0] - 2026-01-01
-
-### ✨ Neue Features (11 Features)
-[... siehe vorheriges Changelog ...]
+**Features:**
+- ✅ REST API mit /api/release_notes_manager/save
+- ✅ JSON Storage in /config/www/release_data.json
+- ✅ Cache-System (5 Minuten)
+- ✅ Backup bei jedem Speichern
 
 ---
 
 **Legende:**
-- ✨ Neue Features  
-- 🔧 Verbesserungen
+- ✨ Neue Features
+- 🔧 Verbesserungen  
 - 🐛 Bugfixes
-- 🏗️ Technische Änderungen
+- 🆕 Neue Komponenten

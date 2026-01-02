@@ -1,78 +1,78 @@
-"""API endpoints for Release Notes Manager."""
+"""REST API endpoints for Release Notes Manager."""
 import logging
-import json
-from pathlib import Path
-import shutil
 from aiohttp import web
 from homeassistant.components.http import HomeAssistantView
+from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
 
-class ReleaseNotesAPIView(HomeAssistantView):
-    """Handle Release Notes API requests."""
+class ReleaseNotesBaseView(HomeAssistantView):
+    """Base view for Release Notes API."""
+    
+    def __init__(self, hass: HomeAssistant, storage, require_token: bool):
+        """Initialize base view."""
+        self._hass = hass
+        self._storage = storage
+        self.requires_auth = require_token
+
+
+class DataView(ReleaseNotesBaseView):
+    """Handle /api/release_notes_manager/save - POST to save data."""
     
     url = "/api/release_notes_manager/save"
     name = "api:release_notes_manager:save"
-    requires_auth = False  # Keine Auth erforderlich für lokale Nutzung
     
     async def post(self, request):
-        """Handle POST request to save release data."""
+        """Save all data (bulk update)."""
         try:
-            data = await request.json()
+            body = await request.json()
+            data_str = body.get('data')
             
-            if 'data' not in data:
-                _LOGGER.error("No data field in request")
+            if not data_str:
                 return web.json_response(
-                    {"error": "No data provided"},
+                    {"error": "Missing 'data' in request"},
                     status=400
                 )
             
-            # Parse release data
-            try:
-                release_data = json.loads(data['data'])
-            except json.JSONDecodeError as e:
-                _LOGGER.error("Invalid JSON data: %s", str(e))
+            import json
+            data = json.loads(data_str)
+            
+            # Validate structure
+            if not isinstance(data, dict):
                 return web.json_response(
-                    {"error": f"Invalid JSON: {str(e)}"},
+                    {"error": "Invalid data structure"},
                     status=400
                 )
             
-            # Get Home Assistant instance
-            hass = request.app["hass"]
+            success = await self._storage.save_all_data(data)
             
-            # Ensure www directory exists
-            www_path = Path(hass.config.path("www"))
-            www_path.mkdir(parents=True, exist_ok=True)
-            
-            data_file = www_path / "release_data.json"
-            
-            # Create backup if file exists
-            if data_file.exists():
-                backup_file = www_path / "release_data.json.backup"
-                try:
-                    shutil.copy2(data_file, backup_file)
-                    _LOGGER.debug("Created backup: %s", backup_file)
-                except Exception as e:
-                    _LOGGER.warning("Could not create backup: %s", str(e))
-            
-            # Write new data
-            with open(data_file, 'w', encoding='utf-8') as f:
-                json.dump(release_data, f, ensure_ascii=False, indent=2)
-            
-            file_size = data_file.stat().st_size
-            _LOGGER.info("Release notes saved via API: %s (%d bytes)", data_file, file_size)
-            
-            return web.json_response({
-                "status": "ok",
-                "file": str(data_file),
-                "size": file_size
-            })
-            
+            if success:
+                return web.json_response({
+                    "status": "saved",
+                    "releases": len(data.get('releases', [])),
+                    "knownIssues": len(data.get('knownIssues', [])),
+                    "categories": len(data.get('categories', []))
+                })
+            else:
+                return web.json_response(
+                    {"error": "Failed to save data"},
+                    status=500
+                )
+        
         except Exception as e:
-            _LOGGER.error("Error in API endpoint: %s", str(e))
-            import traceback
-            _LOGGER.error("Traceback: %s", traceback.format_exc())
+            _LOGGER.error("Error saving data: %s", str(e))
             return web.json_response(
                 {"error": str(e)},
                 status=500
             )
+
+
+def register_api_views(hass: HomeAssistant, storage, require_token: bool = False):
+    """Register all API views."""
+    views = [
+        DataView(hass, storage, require_token),
+    ]
+    
+    for view in views:
+        hass.http.register_view(view)
+        _LOGGER.info("Registered API view: %s (auth: %s)", view.url, require_token)

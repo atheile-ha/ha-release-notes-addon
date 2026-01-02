@@ -1,34 +1,59 @@
 # Home Assistant Release Notes Manager
 
-Version: **0.4.2**
+Version: **0.4.0**
 
-Bugfix-Release mit kritischen Fixes!
+Release Notes Management System mit Admin-Interface und Widget-Support.
 
-## 🐛 Fixes in v0.4.2
+## ✨ Neu in v0.4.0
 
-### Admin: Kein API 404 mehr!
-- ✅ localStorage statt API-Calls
-- ✅ Keine "Speichern fehlgeschlagen" Fehler
-- ✅ Sofortiges Speichern
+### 11 Frontend Features
+- ✅ Delete-Button mit Icon 🗑️
+- ✅ Kategorie-Icons & Color-Picker
+- ✅ Summary Badges im Header
+- ✅ Neuestes Release hervorgehoben (Blau)
+- ✅ Details Toggle (▶/▼)
+- ✅ Pagination ("Weitere laden")
+- ✅ Version Footer
 
-### Integration: Update funktioniert!
-- ✅ HTML-Dateien werden überschrieben
-- ✅ Immer neueste Version
-- ✅ Zuverlässige Updates
-
-### Widget: Auto-Reload
-- ✅ Erkennt Änderungen automatisch (10s)
+### Widget v0.1.2
+- ✅ Auto-Reload (erkennt Änderungen alle 10s)
+- ✅ Kein Platzhalter mehr
 - ✅ CPU-Last: 0.00011%
+
+### Fixes
+- ✅ Cache-Problem behoben
+- ✅ Updates funktionieren zuverlässig
 
 ## 📦 Nach Installation
 
-**Admin:** `/local/release-notes/release-notes.html`  
-**Widget:** `/local/release-notes/release-notes-widget.html`
+**Admin:** `/local/release-notes/release-notes.html?`  
+**Widget:** `/local/release-notes/release-notes-widget.html?`
 
-## 🔄 Update
+**Tipp:** Das `?` verhindert Browser-Cache!
 
-Via HACS updaten → HA neu starten → Fertig!
+## 🎯 Dashboard-Integration
+
+```yaml
+type: iframe
+url: /local/release-notes/release-notes-widget.html?
+aspect_ratio: 200%
+```
+
+**Widget aktualisiert sich automatisch bei Änderungen!**
+
+## 🔄 Update von v0.3.1
+
+- ✅ Einfach via HACS updaten
+- ✅ Home Assistant neu starten
+- ✅ **Daten bleiben erhalten!**
+- ✅ Backend 100% kompatibel
+
+## 📊 Versionen
+
+- Backend: v0.3.1 (unverändert)
+- Frontend: v0.4.0 (11 neue Features)
+- Widget: v0.1.2 (Auto-Reload)
 
 ---
 
-**Kritischer Bugfix-Release - Update empfohlen!** 🚀
+**11 neue Features + Widget + Alle Fixes!** 🚀
