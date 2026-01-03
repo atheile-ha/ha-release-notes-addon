@@ -1,169 +1,128 @@
-# Changelog
+# Changelog - Release Notes Manager
+
+## [0.5.1] - 2026-01-02
+
+### 🐛 Bugfixes
+
+**Zeilenumbrüche in Textfeldern**
+- Beschreibungen, Changelogs und Known Issues zeigen jetzt Zeilenumbrüche korrekt an
+- CSS `white-space: pre-wrap` für alle Text-Felder aktiviert
+- Betrifft: Admin-Interface und Dashboard-Widget
+
+**Gelöste Fehler in Badge-Zählung**
+- Gelöste Known Issues werden jetzt im Änderungs-Badge mitgezählt
+- Vorher: Nur explizite "Änderungen" gezählt
+- Jetzt: Änderungen + gelöste Fehler dieser Version
+- Beispiel: 3 Änderungen + 2 gelöste Bugs = Badge "5 Änderungen"
+
+### 🔧 Technisch
+
+- CSS-Klasse `.preserve-linebreaks` hinzugefügt
+- `getSummaryBadges()` Funktion erweitert um gelöste Issues
+- Frontend-Version: v0.5.1
+- Backend-Version: v0.5.0 (unverändert)
+
+---
 
 ## [0.5.0] - 2026-01-02
 
-### 🎯 Major Architecture Modernization
-
-Version 0.5.0 modernisiert die Integration nach Home Assistant Best Practices.
-
-**Breaking Changes:**
-- URL-Änderung: `/local/release-notes/` → `/release-notes/`
-- Dashboard YAML muss aktualisiert werden (siehe Upgrade-Guide)
-
-### ✨ Features
+### 🎯 Major Changes
 
 **HA-Storage Migration**
-- ✅ Daten jetzt in `/config/.storage/release_notes_manager`
-- ✅ Nutzt offizielle `homeassistant.helpers.storage.Store` API
-- ✅ Automatische Backups durch HA-Infrastruktur
-- ✅ Atomic writes (kein Datenverlust bei Crash)
+- Daten werden in `.storage/release_notes_manager` gespeichert
+- Automatische Migration von v0.4.0 Daten beim ersten Start
+- Rollback-Sicherheit: Alte Daten werden als `.migrated` gesichert
 
-**Frontend-Serving Modernisiert**
-- ✅ HTML-Dateien direkt aus Integration ausgeliefert
-- ✅ Keine Kopien mehr nach `/config/www/`
-- ✅ Nutzt `StaticPathConfig` (HA Best Practice)
-- ✅ Kein Cache-Problem bei Updates
-- ✅ Update-sicher via HACS
+**Frontend-Serving modernisiert**
+- Assets direkt aus Integration bereitgestellt
+- Kein Kopieren nach `/config/www/` mehr nötig
+- Neue URLs: `/release-notes/` statt `/local/release-notes/`
 
-**Automatische Migration**
-- ✅ Bestehende Daten werden beim ersten Start automatisch migriert
-- ✅ Alte Datei wird als `.migrated` gesichert (Rollback möglich)
-- ✅ Migration läuft exakt einmal
-- ✅ Kein manueller Eingriff nötig
-- ✅ Bei Fehler: Alte Daten bleiben erhalten
+**API modernisiert**
+- GET-Endpoint: `/api/release_notes_manager/data` - Daten laden
+- POST-Endpoint: `/api/release_notes_manager/data` - Daten speichern
+- Nur offizielle Home Assistant APIs verwendet
 
-### 🔧 Changed
+### ✅ Features erhalten
 
-**storage.py**
-- Komplett modernisiert mit `Store` API
-- Migration-Logik implementiert
-- Method-Naming: `async_save()` statt `save_all_data()`
-- Bessere Fehlerbehandlung
+Alle 11 Features aus v0.4.0 vollständig erhalten:
+- Suche und Filterung
+- Kategorien und Status
+- Known Issues Tracking
+- Dark Mode, Responsive Design
+- Auto-Reload, Changelog-Ansicht
+- Badge-System, Import/Export
+- Backup-Funktionen
+- Multi-Language (DE)
 
-**__init__.py**
-- Entfernt: `deploy_www_files()` (Kopier-Logik)
-- Neu: `async_register_static_paths()` (StaticPathConfig)
-- Vereinfacht: Kein `storage_type` Parameter mehr
-- Logging verbessert
+### 🐛 Bugfixes
 
-**api.py**
-- Method-Namen HA-konform (`async_save`)
-- Vereinfacht: `require_token` Parameter entfernt
-- API-Endpoint bleibt gleich (kein Breaking Change für HTML)
+**Critical: Cache-Bug behoben**
+- Cache verhinderte Migration beim ersten Start
+- Symptom: HA-Storage blieb leer (0 releases)
+- Fix: Cache-System entfernt (HA-Storage ist schnell genug)
+- Migration läuft jetzt garantiert
 
-### 🐛 Fixed
+**HTML-Versionen korrigiert**
+- Meta-Tags auf v0.5.0 aktualisiert
+- Footer zeigt korrekte Versionen
+- Admin: "Backend v0.5.0 | Frontend v0.5.0"
+- Widget: "Backend v0.5.0 | Widget v0.5.0"
 
-**Cache-Probleme**
-- ✅ `cache_headers=False` verhindert Browser-Cache
-- ✅ Kein `shutil.copy2` mehr = keine Timestamp-Probleme
-- ✅ Updates via HACS funktionieren zuverlässig
+**API-Endpoint hinzugefügt**
+- v0.5.0 (initial) hatte nur POST-Endpoint
+- GET-Endpoint fehlte → HTML konnte Daten nicht laden
+- Fix: GET + POST in einem Endpoint vereint
 
-**HACS-Installation**
-- ✅ Keine www/ Ordner-Konflikte mehr
-- ✅ HTML-Dateien bleiben in Integration
-- ✅ Kein manuelles Kopieren nötig
+### ⚠️ Breaking Changes
 
-**Datensicherheit**
-- ✅ Atomic writes via HA-Storage
-- ✅ Automatische Backups
-- ✅ Keine Datenverluste bei Crashes
+**Dashboard-URLs geändert:**
+```yaml
+# ALT (v0.4.0):
+url: /local/release-notes/release-notes-widget.html?
 
-### 📚 Documentation
+# NEU (v0.5.0):
+url: /release-notes/release-notes-widget.html?
+```
 
-- ✅ UPGRADE_v0.5.0.md - Schritt-für-Schritt Upgrade-Guide
-- ✅ TECHNICAL_CHANGES_v0.5.0.md - Technische Details
-- ✅ README aktualisiert mit neuen URLs
-- ✅ Troubleshooting-Guide erweitert
+**Datenspeicherung:**
+- ALT: `/config/www/release_data.json`
+- NEU: `/config/.storage/release_notes_manager`
 
-### ⚠️ Migration Notes
+**Automatische Migration:**
+- Erfolgt beim ersten Start nach Update
+- Alte Datei wird als `.migrated` gesichert
+- Kein Datenverlust möglich
 
-**Automatisch migriert:**
-- `/config/www/release_data.json` → `/config/.storage/release_notes_manager`
+### 📊 Getestet mit
 
-**Manuell aktualisieren:**
-- Dashboard URLs: `/local/release-notes/...` → `/release-notes/...`
-
-**Für Rollback bewahrt:**
-- `/config/www/release_data.json.migrated` (alte Daten)
-
-**Siehe:** UPGRADE_v0.5.0.md für Details
+- Home Assistant 2025.12.5
+- Migration von v0.4.0 mit 37+ releases
+- HACS Installation
+- Manuelle Installation
 
 ---
 
-## [0.4.0] - 2026-01-02
+## [0.4.0] - 2025-12-XX
 
-### ✨ Frontend Features (11 neue Features)
-
-**Feature 1-3: Delete & Icons**
-- ✅ Delete-Button mit 🗑️ Icon
-- ✅ Kategorie-Icons (🎨)
-- ✅ Sortierung (Version, Datum, Kategorie)
-
-**Feature 4-6: Color & Badges**
-- ✅ Color-Picker für Kategorien (11 Farben)
-- ✅ Badge-System (Features/Änderungen/Fehler Count)
-- ✅ Neuestes Release hervorgehoben (Blauer Header)
-
-**Feature 7-9: Summary & Header**
-- ✅ Summary Badges im Header (Schnellübersicht)
-- ✅ Blue Header für neuestes Release
-- ✅ Pagination ("Weitere laden" Button)
-
-**Feature 10-11: Details & Version**
-- ✅ Details Toggle (▶/▼ statt Text)
-- ✅ Version Footer (Backend/Frontend Version)
-
-### 🆕 Widget v0.1.2
-
-**Auto-Reload Feature:**
-- ✅ Erkennt Änderungen automatisch (alle 10s)
-- ✅ CPU-Last: 0.00011% (vernachlässigbar)
-- ✅ Funktioniert in Side Panel
-- ✅ Max. Verzögerung: 10 Sekunden
-
-**Layout-Fixes:**
-- ✅ Kein Platzhalter für nicht-sichtbare Releases
-- ✅ Kompakte Darstellung
-- ✅ Expandiert nur bei Bedarf
-
-### 🔧 Backend v0.3.1
-
-**Unverändert:**
-- ✅ 100% kompatibel mit v0.3.1
-- ✅ REST API funktioniert weiterhin
-- ✅ Storage in /config/www/release_data.json
-- ✅ Daten bleiben erhalten
-
-### 🐛 Fixes
-
-**Cache-Problem behoben:**
-- ✅ __init__.py kopiert HTML IMMER (auch wenn existiert)
-- ✅ Meta-Tag Version 0.4.0 für Cache-Busting
-- ✅ Updates funktionieren zuverlässig
-- ✅ **Empfehlung:** Nutze `?` am URL-Ende (verhindert Browser-Cache)
-
-**Widget-Layout:**
-- ✅ min-height aus .release-bottom-row entfernt
-- ✅ Kein Leerraum mehr für nicht-sichtbare Releases
-- ✅ **Empfehlung:** aspect_ratio: 200% für optimale Darstellung
+### Features
+- 11 neue Features
+- UI-Verbesserungen
+- Performance-Optimierungen
+- Vollständiges Admin-Interface
+- Dashboard-Widget
 
 ---
 
-## [0.3.1] - 2024-12-15
+## [0.3.x] - 2025-11-XX
 
-### Backend-Version (Basis für v0.4.0 und v0.5.0)
-
-**Features:**
-- ✅ REST API mit /api/release_notes_manager/save
-- ✅ JSON Storage in /config/www/release_data.json
-- ✅ Cache-System (5 Minuten)
-- ✅ Backup bei jedem Speichern
+### Initial Release
+- Erste HACS-Version
+- Basis-Release-Verwaltung
+- Einfaches Frontend
 
 ---
 
-**Legende:**
-- ✨ Neue Features
-- 🔧 Verbesserungen  
-- 🐛 Bugfixes
-- 🆕 Neue Komponenten
-- ⚠️ Breaking Changes
+**Repository:** https://github.com/atheile-ha/ha-release-notes-manager  
+**HACS:** Custom Repository  
+**Lizenz:** MIT

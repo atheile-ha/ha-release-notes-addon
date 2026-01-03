@@ -86,6 +86,7 @@
     .block { display: block; }
     .hidden { display: none; }
     .cursor-pointer { cursor: pointer; }
+    .preserve-linebreaks { white-space: pre-wrap; word-wrap: break-word; }
     .space-y-2 > * + * { margin-top: 0.5rem; }
     .space-y-3 > * + * { margin-top: 0.75rem; }
     button { border: none; cursor: pointer; transition: all 0.15s; font-size: 0.875rem; }
@@ -469,7 +470,7 @@ function getSummaryBadges(r) {
 }
 document.getElementById('search-input').addEventListener('input',e=>{state.searchTerm=e.target.value;render()});
 document.getElementById('category-filter').addEventListener('change',e=>{state.filterCategory=e.target.value;render()});
-console.log('🚀 Home Assistant Release Notes Widget v0.5.0 startet...');
+console.log('🚀 Home Assistant Release Notes Widget v0.5.1 startet...');
 // Force reload from localStorage (bypass any cache)
 const storageData=localStorage.getItem('ha_releases');
 if(storageData){
@@ -507,7 +508,7 @@ if(slider){slider.value=state.autoCollapseTimeout;updateTimeout(state.autoCollap
 
   <!-- Versions-Anzeige -->
   <div style="position: fixed; bottom: 10px; left: 10px; font-size: 11px; color: #9ca3af; font-family: monospace; z-index: 1000;">
-    Backend: v0.5.0 | Widget: v0.5.0
+    Backend: v0.5.0 | Widget: v0.5.1
   </div>
 </body>
 </html>
