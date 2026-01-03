@@ -13,19 +13,20 @@ Ein elegantes Tool zur Verwaltung und Anzeige von Release Notes direkt in Home A
 - 🔄 **Auto-Reload** - Widget aktualisiert sich automatisch
 
 **⚠️ Breaking Change:** URLs haben sich geändert!
+
 Wegen internem HA-Cache werden neue Front-Ends in Dashboard und iframe Card für das Widget nicht automatisch geladen. Daher ist bis zur Lösung eine Anpassung der Links auf die aktuelle Version erforderlich
 
-## 🆕 Version 0.5.1
+## 🆕 Version 0.5.2
 
 ### Bugfixes in dieser Version:
 
-✅ **Zeilenumbrüche funktionieren jetzt!**
-- Mehrzeilige Texte in Beschreibungen, Changelogs und Known Issues werden korrekt dargestellt
-- Enter-Taste im Eingabefeld erzeugt sichtbare Zeilenumbrüche
+✅ **Widget: Badge-Zählung korrigiert**
+- Gelöste Known Issues werden jetzt auch im Widget im Änderungs-Badge mitgezählt
+- War in v0.5.1 nur im Admin-Interface implementiert
 
-✅ **Gelöste Fehler in Badge-Zählung**
-- Das Änderungs-Badge zählt jetzt auch gelöste Known Issues mit
-- Beispiel: 3 Änderungen + 2 gelöste Bugs = "5 Änderungen"
+✅ **Widget: Zeilenumbrüche funktionieren**
+- Mehrzeilige Texte werden auch im Widget korrekt dargestellt
+- War in v0.5.1 nur im Admin-Interface implementiert
 
 ## 🚀 Installation
 
@@ -53,13 +54,13 @@ release_notes_manager:
 **Dashboard-Widget:**
 ```yaml
 type: iframe
-url: /release-notes/release-notes-widget.html?=v0.5.1
+url: /release-notes/release-notes-widget.html?=v0.5.2
 aspect_ratio: 200%
 ```
 
 **Admin-Interface:**
 ```
-http://DEINE-IP:8123/release-notes/release-notes.html?=v0.5.1
+http://DEINE-IP:8123/release-notes/release-notes.html?=v0.5.2
 ```
 
 ## 📝 Dokumentation
@@ -78,5 +79,5 @@ MIT License - siehe [LICENSE](LICENSE)
 
 ---
 
-**Version:** 0.5.1  
+**Version:** 0.5.2  
 **Repository:** https://github.com/atheile-ha/ha-release-notes-manager

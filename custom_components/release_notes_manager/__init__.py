@@ -11,7 +11,7 @@ from .api import register_api_views
 
 _LOGGER = logging.getLogger(__name__)
 DOMAIN = "release_notes_manager"
-VERSION = "0.5.0"
+VERSION = "0.5.1"
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """
@@ -42,7 +42,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     await async_register_static_paths(hass)
     
     # Register API endpoints
-    register_api_views(hass, storage)
+    register_api_views(hass, storage, VERSION)
     
     _LOGGER.info("Release Notes Manager v%s setup complete", VERSION)
     _LOGGER.info(

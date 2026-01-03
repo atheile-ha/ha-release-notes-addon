@@ -1,12 +1,38 @@
 # Changelog - Release Notes Manager
 
+## [0.5.2] - 2026-01-03
+
+### 🐛 Bugfixes
+
+**Widget: Fehlende Fixes nachgeholt**
+- Badge-Zählung im Widget korrigiert: Gelöste Known Issues werden jetzt mitgezählt
+- Zeilenumbrüche im Widget funktionieren jetzt korrekt
+
+**Hinweis:** Diese Fixes waren in v0.5.1 nur im Admin-Interface, nicht im Widget vorhanden.
+
+### 🔧 Technisch
+
+- Widget-Version: v0.5.2
+- Backend-Version: v0.5.1 (unverändert)
+- Admin-Version: v0.5.1 (unverändert)
+
+---
+
 ## [0.5.1] - 2026-01-02
+
+### 🎉 Neue Features
+
+**Auto-Reload bei Updates**
+- Widget und Admin-Interface prüfen automatisch Backend-Version
+- Bei Versions-Mismatch: Automatischer Reload (einmalig)
+- Kein manuelles Cache-Busting mehr nötig!
+- localStorage verhindert Reload-Loops
 
 ### 🐛 Bugfixes
 
 **Zeilenumbrüche in Textfeldern**
 - Beschreibungen, Changelogs und Known Issues zeigen jetzt Zeilenumbrüche korrekt an
-- CSS `white-space: pre-wrap` für alle Text-Felder aktiviert
+- `esc()` Funktion konvertiert `\n` → `<br>`
 - Betrifft: Admin-Interface und Dashboard-Widget
 
 **Gelöste Fehler in Badge-Zählung**
@@ -17,10 +43,12 @@
 
 ### 🔧 Technisch
 
-- CSS-Klasse `.preserve-linebreaks` hinzugefügt
-- `getSummaryBadges()` Funktion erweitert um gelöste Issues
+- API-Endpoint hinzugefügt: `GET /api/release_notes_manager/version`
+- Auto-Reload JavaScript in Widget und Admin
+- `esc()` Funktion erweitert: `.replace(/\n/g,'<br>')`
+- `getSummaryBadges()` zählt gelöste Issues
 - Frontend-Version: v0.5.1
-- Backend-Version: v0.5.0 (unverändert)
+- Backend-Version: v0.5.1
 
 ---
 

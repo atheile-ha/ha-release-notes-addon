@@ -8,6 +8,34 @@ from homeassistant.core import HomeAssistant
 _LOGGER = logging.getLogger(__name__)
 
 
+class ReleaseNotesVersionView(HomeAssistantView):
+    """
+    Handle /api/release_notes_manager/version
+    - GET to get current backend version
+    
+    Used by frontend for auto-reload on version mismatch.
+    """
+    
+    url = "/api/release_notes_manager/version"
+    name = "api:release_notes_manager:version"
+    requires_auth = False  # Local-only usage
+    
+    def __init__(self, hass: HomeAssistant, version: str):
+        """Initialize view."""
+        self._hass = hass
+        self._version = version
+    
+    async def get(self, request):
+        """Return current backend version."""
+        return web.json_response({
+            "version": self._version
+        }, headers={
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        })
+
+
 class ReleaseNotesDataView(HomeAssistantView):
     """
     Handle /api/release_notes_manager/data
@@ -98,14 +126,23 @@ class ReleaseNotesDataView(HomeAssistantView):
             )
 
 
-def register_api_views(hass: HomeAssistant, storage) -> None:
+def register_api_views(hass: HomeAssistant, storage, version: str) -> None:
     """
     Register all API views.
     
     Changed in v0.5.0: 
     - Removed require_token parameter (always False for local use)
     - Added GET endpoint for data loading
+    
+    Changed in v0.5.1:
+    - Added version endpoint for auto-reload
     """
-    view = ReleaseNotesDataView(hass, storage)
-    hass.http.register_view(view)
-    _LOGGER.info("Registered API view: %s (GET + POST)", view.url)
+    # Data endpoint
+    data_view = ReleaseNotesDataView(hass, storage)
+    hass.http.register_view(data_view)
+    _LOGGER.info("Registered API view: %s (GET + POST)", data_view.url)
+    
+    # Version endpoint
+    version_view = ReleaseNotesVersionView(hass, version)
+    hass.http.register_view(version_view)
+    _LOGGER.info("Registered API view: %s (GET)", version_view.url)
