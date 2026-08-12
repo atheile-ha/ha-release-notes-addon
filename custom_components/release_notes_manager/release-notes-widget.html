@@ -4,11 +4,11 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="version" content="widget-0.5.2">
+  <meta id="version-meta" name="version" content="widget-0.5.3">
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home Assistant Release Notes Manager v0.3.0</title>
+  <title>Home Assistant Release Notes Widget v0.5.3</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: #f9fafb; color: #111827; }
@@ -477,7 +477,12 @@ function getSummaryBadges(r) {
 }
 document.getElementById('search-input').addEventListener('input',e=>{state.searchTerm=e.target.value;render()});
 document.getElementById('category-filter').addEventListener('change',e=>{state.filterCategory=e.target.value;render()});
-console.log('🚀 Home Assistant Release Notes Widget v0.5.1 startet...');
+// Einzige Quelle für die Widget-Version dieser Datei. Nur erhöhen, wenn an
+// DIESER Datei etwas geändert wurde (unabhängig von Backend/Admin-Version).
+const WIDGET_VERSION = '0.5.3';
+document.title = 'Home Assistant Release Notes Widget v' + WIDGET_VERSION;
+document.getElementById('version-meta').setAttribute('content', 'widget-' + WIDGET_VERSION);
+console.log('🚀 Home Assistant Release Notes Widget v' + WIDGET_VERSION + ' startet...');
 // Force reload from localStorage (bypass any cache)
 const storageData=localStorage.getItem('ha_releases');
 if(storageData){
@@ -492,22 +497,25 @@ if(storageData){
 // Auto-Reload bei Version-Mismatch (v0.5.1+)
 async function checkVersionAndReload() {
   try {
-    const WIDGET_VERSION = '0.5.2';
     const STORAGE_KEY = 'release_notes_widget_version_reloaded';
-    
-    // Hole Backend-Version
+
+    // Hole aktuelle Versionen vom Backend
     const response = await fetch('/api/release_notes_manager/version?t=' + Date.now());
     if (!response.ok) return; // API nicht verfügbar, überspringe Check
-    
+
     const data = await response.json();
-    const backendVersion = data.version;
-    
-    // Prüfe ob wir bereits für diese Version reloadet haben
+    const backendVersion = data.backend;
+    const widgetVersion = data.widget;
+
+    document.getElementById('version-footer').textContent =
+      'Backend: v' + backendVersion + ' | Widget: v' + WIDGET_VERSION;
+
+    // Prüfe ob wir bereits für diese Widget-Version reloadet haben
     const lastReloadedVersion = localStorage.getItem(STORAGE_KEY);
-    
-    if (backendVersion !== WIDGET_VERSION && lastReloadedVersion !== backendVersion) {
-      console.log('🔄 Version-Mismatch erkannt (Backend: ' + backendVersion + ', Widget: ' + WIDGET_VERSION + ') - Reload...');
-      localStorage.setItem(STORAGE_KEY, backendVersion);
+
+    if (widgetVersion !== WIDGET_VERSION && lastReloadedVersion !== widgetVersion) {
+      console.log('🔄 Version-Mismatch erkannt (Server meldet Widget v' + widgetVersion + ', geladen ist v' + WIDGET_VERSION + ') - Reload...');
+      localStorage.setItem(STORAGE_KEY, widgetVersion);
       
       // Reload nach kurzer Verzögerung
       setTimeout(() => {
@@ -560,8 +568,8 @@ if(slider){slider.value=state.autoCollapseTimeout;updateTimeout(state.autoCollap
   </script>
 
   <!-- Versions-Anzeige -->
-  <div style="position: fixed; bottom: 10px; left: 10px; font-size: 11px; color: #9ca3af; font-family: monospace; z-index: 1000;">
-    Backend: v0.5.1 | Widget: v0.5.2
+  <div id="version-footer" style="position: fixed; bottom: 10px; left: 10px; font-size: 11px; color: #9ca3af; font-family: monospace; z-index: 1000;">
+    Widget: v0.5.3
   </div>
 </body>
 </html>

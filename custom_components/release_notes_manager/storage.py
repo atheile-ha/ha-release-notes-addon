@@ -1,8 +1,7 @@
-"""Storage layer for Release Notes Manager v0.5.0 - HA-Storage based."""
+"""Storage layer for Release Notes Manager - HA-Storage based."""
 import logging
 import json
 from pathlib import Path
-# Cache removed - not needed
 from typing import Any
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.storage import Store
@@ -143,10 +142,6 @@ class ReleaseNotesStorage:
     async def async_save(self, data: dict[str, Any]) -> bool:
         """Save data to HA-Storage."""
         try:
-            # Invalidate cache
-            self._cache = None
-            self._cache_time = None
-            
             # Save to HA-Storage (atomic write with backup)
             await self._store.async_save(data)
             

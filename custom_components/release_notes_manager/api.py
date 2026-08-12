@@ -1,4 +1,4 @@
-"""REST API endpoints for Release Notes Manager v0.5.0."""
+"""REST API endpoints for Release Notes Manager."""
 import logging
 import json
 from aiohttp import web
@@ -11,25 +11,26 @@ _LOGGER = logging.getLogger(__name__)
 class ReleaseNotesVersionView(HomeAssistantView):
     """
     Handle /api/release_notes_manager/version
-    - GET to get current backend version
-    
-    Used by frontend for auto-reload on version mismatch.
+    - GET to get current versions of backend, admin dashboard and widget
+
+    Used by each frontend for auto-reload on its own version mismatch.
+    Backend, Admin-Dashboard und Widget werden unabhängig voneinander
+    versioniert - jede Datei hat ihre eigene Versionsnummer, die nur bei
+    tatsächlichen Änderungen an genau dieser Datei erhöht wird.
     """
-    
+
     url = "/api/release_notes_manager/version"
     name = "api:release_notes_manager:version"
     requires_auth = False  # Local-only usage
-    
-    def __init__(self, hass: HomeAssistant, version: str):
+
+    def __init__(self, hass: HomeAssistant, versions: dict):
         """Initialize view."""
         self._hass = hass
-        self._version = version
-    
+        self._versions = versions
+
     async def get(self, request):
-        """Return current backend version."""
-        return web.json_response({
-            "version": self._version
-        }, headers={
+        """Return current backend/admin/widget versions."""
+        return web.json_response(self._versions, headers={
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
             'Expires': '0'
@@ -126,23 +127,19 @@ class ReleaseNotesDataView(HomeAssistantView):
             )
 
 
-def register_api_views(hass: HomeAssistant, storage, version: str) -> None:
+def register_api_views(hass: HomeAssistant, storage, versions: dict) -> None:
     """
     Register all API views.
-    
-    Changed in v0.5.0: 
-    - Removed require_token parameter (always False for local use)
-    - Added GET endpoint for data loading
-    
-    Changed in v0.5.1:
-    - Added version endpoint for auto-reload
+
+    versions: dict mit den Keys "backend", "admin", "widget" - siehe
+    __init__.py für die Versionierungs-Konvention.
     """
     # Data endpoint
     data_view = ReleaseNotesDataView(hass, storage)
     hass.http.register_view(data_view)
     _LOGGER.info("Registered API view: %s (GET + POST)", data_view.url)
-    
+
     # Version endpoint
-    version_view = ReleaseNotesVersionView(hass, version)
+    version_view = ReleaseNotesVersionView(hass, versions)
     hass.http.register_view(version_view)
     _LOGGER.info("Registered API view: %s (GET)", version_view.url)

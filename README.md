@@ -7,26 +7,41 @@ Ein elegantes Tool zur Verwaltung und Anzeige von Release Notes direkt in Home A
 ## ✨ Features
 
 - 📋 **Release-Verwaltung** - Versionen, Kategorien, Status-Tracking
-- ⚠️ **Known Issues** - Bekannte Probleme dokumentieren und verfolgen
-- 🎨 **Dashboard-Widget** - Kompakte Anzeige der neuesten Releases
+- ⚠️ **Known Issues** - Bekannte Probleme dokumentieren, verfolgen und beim nächsten Release automatisch übernehmen
+- 🎨 **Admin-Interface (Eingabe-Dashboard)** - Vollständiges Verwaltungs-Interface zum Erstellen und Bearbeiten von Releases
+- 🖥️ **Dashboard-Widget (Read-only-Dashboard)** - Kompakte Anzeige der neuesten Releases
 - 🔍 **Suche & Filter** - Schnell das richtige Release finden
-- 🔄 **Auto-Reload** - Widget aktualisiert sich automatisch
+- 🔄 **Auto-Reload** - Beide Dashboards prüfen ihre jeweilige Version gegen das Backend
+- ⬆️⬇️ **Export/Import** - Datenstand im Admin-Interface als JSON sichern und wiederherstellen
 
-**⚠️ Breaking Change:** URLs haben sich geändert!
+**⚠️ Wichtiger Hinweis zu Dashboard-URLs**
 
-Wegen internem HA-Cache werden neue Front-Ends in Dashboard und iframe Card für das Widget nicht automatisch geladen. Daher ist bis zur Lösung eine Anpassung der Links auf die aktuelle Version erforderlich
+Home Assistant cached Dashboard-Kacheln (Dashboard-Tab und iframe-Card) intern und lädt ein aktualisiertes Front-End nicht automatisch nach. Deshalb wird in den URLs unten ein `?=vX.X.X`-Parameter mit der aktuellen Admin- bzw. Widget-Version mitgegeben - nach einem Update muss dieser Parameter manuell angepasst werden (siehe [Troubleshooting](#-troubleshooting)).
 
-## 🆕 Version 0.5.2
+## 🆕 Version 0.5.3
+
+### Neu in dieser Version:
+
+✅ **Admin: Export / Import**
+- Zwei neue Schaltflächen im Admin-Interface: ↑ importiert einen JSON-Datenstand, ↓ exportiert den aktuellen als Backup
 
 ### Bugfixes in dieser Version:
 
-✅ **Widget: Badge-Zählung korrigiert**
-- Gelöste Known Issues werden jetzt auch im Widget im Änderungs-Badge mitgezählt
-- War in v0.5.1 nur im Admin-Interface implementiert
+✅ **Versions-Tracking von Backend/Admin/Widget entkoppelt**
+- Admin- und Widget-Dashboard prüfen jetzt jeweils nur noch ihre eigene Version gegen das Backend
+- Vorher lösten Widget und Backend fälschlich bei jedem neuen Gerät/Browser einen kompletten Dashboard-Reload aus
 
-✅ **Widget: Zeilenumbrüche funktionieren**
-- Mehrzeilige Texte werden auch im Widget korrekt dargestellt
-- War in v0.5.1 nur im Admin-Interface implementiert
+✅ **Admin: Zeilenumbrüche im Bearbeitungsfeld korrigiert**
+- Beim erneuten Öffnen eines Releases erschienen mehrzeilige Detailtexte als literales `<br>` statt als Zeilenumbruch
+
+Vollständige Versionshistorie: [CHANGELOG.md](CHANGELOG.md)
+
+## 🏗️ Architektur
+
+- **HA-Storage basiert:** Daten werden in Home Assistant's offiziellem Storage-System (`/config/.storage/release_notes_manager`) gespeichert
+- **Frontend-Serving direkt aus der Integration:** kein Kopieren nach `/config/www/` nötig, URLs unter `/release-notes/`
+- **API:** `GET`/`POST /api/release_notes_manager/data` zum Laden/Speichern, `GET /api/release_notes_manager/version` liefert die aktuellen Versionsstände von Backend, Admin- und Widget-Dashboard
+- **Drei unabhängige Versionsstände:** Backend, Admin-Dashboard (`release-notes.html`) und Widget-Dashboard (`release-notes-widget.html`) haben jeweils eigene Versionsnummern, die nur erhöht werden, wenn an genau dieser Datei etwas geändert wurde. Die Paketversion in `manifest.json`/`hacs.json` wird davon unabhängig bei jedem Release hochgezählt.
 
 ## 🚀 Installation
 
@@ -49,29 +64,114 @@ Wegen internem HA-Cache werden neue Front-Ends in Dashboard und iframe Card für
 **configuration.yaml:**
 ```yaml
 release_notes_manager:
+
+# Optional: Debug-Logging
+logger:
+  default: info
+  logs:
+    custom_components.release_notes_manager: debug
 ```
 
-**Dashboard-Widget:**
+**Dashboard-Widget (iframe-Card):**
 ```yaml
 type: iframe
-url: /release-notes/release-notes-widget.html?=v0.5.2
+url: /release-notes/release-notes-widget.html?=v0.5.3
 aspect_ratio: 200%
 ```
 
-**Admin-Interface:**
+**Admin-Interface als Dashboard-Tab:**
+```yaml
+title: Release Notes
+icon: mdi:note-text
+url: /release-notes/release-notes.html?=v0.5.3
 ```
-http://DEINE-IP:8123/release-notes/release-notes.html?=v0.5.2
+
+**Admin-Interface direkt im Browser:**
+```
+http://DEINE-IP:8123/release-notes/release-notes.html?=v0.5.3
 ```
 
-## 📝 Dokumentation
+Die Versionsnummer im `?=vX.X.X`-Parameter muss zur jeweils aktuellen **Widget**- bzw. **Admin**-Version passen (nicht zur Backend- oder Paketversion) - siehe [CHANGELOG.md](CHANGELOG.md).
 
-- [INFO.md](INFO.md) - Vollständige Dokumentation
-- [CHANGELOG.md](CHANGELOG.md) - Versionshistorie
+## 📖 Verwendung
 
-## 🐛 Support
+### Release erstellen
+
+1. Admin-Interface öffnen (`/release-notes/release-notes.html`)
+2. **"+ Neues Release"** klicken
+3. Formular ausfüllen:
+   - Version (z.B. "2025.1.0")
+   - Name (optional)
+   - Datum
+   - Features, Änderungen/Bugfixes, bekannte Fehler
+4. **"Speichern"** klicken
+
+### Known Issue hinzufügen
+
+1. Release öffnen (✏️)
+2. Zu **"Bekannte Fehler"** scrollen
+3. **"+ Hinzufügen"** klicken
+4. Titel und Details eingeben
+5. **"Speichern"**
+
+Offene bekannte Fehler werden beim Anlegen eines neuen Release automatisch als Vorschlag übernommen und können dort als gelöst markiert werden.
+
+### Kategorien verwalten
+
+1. Oben rechts **"Kategorien"** klicken
+2. Neue Kategorie hinzufügen oder bestehende bearbeiten
+3. Farbe anpassen (Klick auf das Label)
+
+## 🐛 Troubleshooting
+
+### Releases werden nicht angezeigt / Dashboard zeigt eine alte Version
+
+**Lösung 1: Versionsnummer in der Dashboard-URL prüfen**
+
+Die URL muss die aktuelle Admin-/Widget-Version referenzieren (siehe [Konfiguration](#️-konfiguration)), sonst liefert Home Assistant eine gecachte, alte Kachel aus.
+
+**Lösung 2: Browser-Cache leeren**
+```
+Strg + Shift + R (Hard Reload)
+```
+
+**Lösung 3: Logs prüfen**
+```
+Einstellungen → System → Protokolle
+Suche: "release_notes_manager"
+```
+
+### 404 Error beim Öffnen
+
+**URL prüfen:**
+- ✅ Richtig: `/release-notes/release-notes.html?...`
+- ❌ Falsch: `/local/release-notes/...` (alte URL-Struktur vor v0.5.0)
+
+**configuration.yaml prüfen:**
+```yaml
+release_notes_manager:  # Muss vorhanden sein!
+```
+
+### Speichern funktioniert nicht
+
+**Logs prüfen:**
+```
+Einstellungen → System → Protokolle
+Suche: "Error"
+```
+
+**API-Endpoint testen:**
+```bash
+# In Browser Developer Tools (F12) Console:
+fetch('/api/release_notes_manager/data')
+  .then(r => r.json())
+  .then(d => console.log(d))
+```
+
+## 🤝 Support
 
 - [GitHub Issues](https://github.com/atheile-ha/ha-release-notes-manager/issues)
-- [Troubleshooting](INFO.md#troubleshooting)
+- [Troubleshooting](#-troubleshooting)
 
 ## 📜 Lizenz
 
@@ -79,5 +179,7 @@ MIT License - siehe [LICENSE](LICENSE)
 
 ---
 
-**Version:** 0.5.2  
+Entwickelt für die Home Assistant Community 🏠
+
+**Version:** 0.5.3  
 **Repository:** https://github.com/atheile-ha/ha-release-notes-manager

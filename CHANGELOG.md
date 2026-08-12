@@ -1,5 +1,36 @@
 # Changelog - Release Notes Manager
 
+## [0.5.3] - 2026-08-12
+
+### 🎉 Neue Features
+
+**Admin: Export / Import**
+- Zwei neue Schaltflächen im Admin-Interface zwischen "Kategorien" und "+ Neues Release": ↑ (Import) und ↓ (Export)
+- Export lädt den aktuellen Datenstand (Releases, bekannte Fehler, Kategorien) als JSON-Datei herunter
+- Import liest eine JSON-Datei ein und ersetzt nach Bestätigung den aktuellen Datenstand vollständig damit
+- Nur im Admin-Interface verfügbar, nicht im Widget
+
+### 🐛 Bugfixes
+
+**Versions-Tracking von Backend/Admin/Widget entkoppelt**
+- Der `/api/release_notes_manager/version`-Endpoint lieferte bisher nur eine einzelne Versionsnummer, gegen die sowohl das Admin- als auch das Widget-Dashboard verglichen wurden - obwohl beide unabhängig voneinander versioniert werden. Dadurch stimmten Widget- und Backend-Version strukturell nie überein, was bei jedem neuen Browser/Gerät einen unnötigen Reload des kompletten Dashboards auslöste (`window.parent.location.reload()`).
+- Der Endpoint liefert jetzt `{"backend": ..., "admin": ..., "widget": ...}`; jedes Dashboard vergleicht nur noch seine eigene Version.
+- Titel, Meta-Tag und Versions-Fußzeile beider Dashboards werden jetzt aus je einer einzigen JS-Konstante abgeleitet statt an mehreren Stellen einzeln hartcodiert zu sein (u.a. stand im Admin-Meta-Tag noch "0.5.0", im Widget-Titel noch "v0.3.0").
+
+**Admin: Zeilenumbrüche in Bearbeitungsfeldern**
+- Beim erneuten Öffnen eines Releases zum Bearbeiten wurden mehrzeilige Detailtexte mit literalem `<br>` statt echten Zeilenumbrüchen angezeigt. Ursache: Die `esc()`-Funktion für die Leseansicht wandelt `\n` in `<br>` um und wurde fälschlich auch zum Befüllen der Eingabefelder verwendet. Neue Funktion `escInput()` (ohne `<br>`-Umwandlung) wird jetzt für alle `value`-Attribute und `<textarea>`-Inhalte verwendet.
+
+### 🔧 Technisch
+
+- Backend-Version: v0.5.2 (Versions-API umgebaut)
+- Admin-Version: v0.5.3 (Versions-Check-Fix, Zeilenumbruch-Fix, Export/Import)
+- Widget-Version: v0.5.3 (Versions-Check-Fix)
+- `hacs.json`: Mindest-HA-Version auf 2024.7.0 korrigiert (vorher 2023.1.0 - `StaticPathConfig`/`async_register_static_paths`, seit v0.5.0 verwendet, gibt es erst ab HA 2024.7)
+- `storage.py`: totes Cache-Überbleibsel aus `async_save()` entfernt
+- `INFO.md` entfernt: war durch einen Merge-Unfall in der v0.5.1-Historie verloren gegangen (README verlinkte seitdem ins Leere) und duplizierte ohnehin größtenteils die README. Inhalte (Verwendung, Troubleshooting) in README.md übernommen; `hacs.json` bekommt stattdessen `"render_readme": true`, damit HACS die README statt des (seit HACS 2.0 kaum noch genutzten) info.md anzeigt
+
+---
+
 ## [0.5.2] - 2026-01-03
 
 ### 🐛 Bugfixes
