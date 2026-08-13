@@ -1,14 +1,31 @@
 # Changelog - Release Notes Manager
 
+## [0.5.4] - 2026-08-13
+
+### 🎉 Neue Features
+
+**Admin: Drag'n'Drop zwischen "Neue Features" und "Änderungen/Bugfixes"**
+- Einträge im Release-Bearbeiten-Formular lassen sich per Ziehpunkt (⠿) zwischen den beiden Abschnitten verschieben, ohne sie löschen und neu anlegen zu müssen
+- Ziel-Abschnitt wird während des Ziehens optisch hervorgehoben
+
+### 🔧 Technisch
+
+- Admin-Version: v0.5.4 (Drag'n'Drop)
+- Backend-Version: v0.5.2 (unverändert)
+- Widget-Version: v0.5.3 (unverändert)
+
+---
+
 ## [0.5.3] - 2026-08-12
 
 ### 🎉 Neue Features
 
-**Admin: Export / Import**
-- Zwei neue Schaltflächen im Admin-Interface zwischen "Kategorien" und "+ Neues Release": ↑ (Import) und ↓ (Export)
+**Admin: Einstellungen-Popup mit Export / Import**
+- Neue Schaltfläche "🔧 Einstellungen" im Admin-Interface zwischen "Kategorien" und "+ Neues Release" öffnet ein Popup mit Abschnitt "💾 Daten"
 - Export lädt den aktuellen Datenstand (Releases, bekannte Fehler, Kategorien) als JSON-Datei herunter
 - Import liest eine JSON-Datei ein und ersetzt nach Bestätigung den aktuellen Datenstand vollständig damit
 - Nur im Admin-Interface verfügbar, nicht im Widget
+- Das Einstellungen-Popup ist bewusst erweiterbar angelegt, um künftig weitere Einstellungen (z.B. Darstellung, Zugriff) als eigene Abschnitte aufzunehmen
 
 ### 🐛 Bugfixes
 

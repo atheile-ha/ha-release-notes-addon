@@ -12,27 +12,19 @@ Ein elegantes Tool zur Verwaltung und Anzeige von Release Notes direkt in Home A
 - 🖥️ **Dashboard-Widget (Read-only-Dashboard)** - Kompakte Anzeige der neuesten Releases
 - 🔍 **Suche & Filter** - Schnell das richtige Release finden
 - 🔄 **Auto-Reload** - Beide Dashboards prüfen ihre jeweilige Version gegen das Backend
-- ⬆️⬇️ **Export/Import** - Datenstand im Admin-Interface als JSON sichern und wiederherstellen
+- 🔧 **Einstellungen** - Popup im Admin-Interface, u.a. mit Export/Import des Datenstands als JSON
+- 🖱️ **Drag'n'Drop** - Einträge im Admin-Interface zwischen "Neue Features" und "Änderungen/Bugfixes" verschieben
 
 **⚠️ Wichtiger Hinweis zu Dashboard-URLs**
 
 Home Assistant cached Dashboard-Kacheln (Dashboard-Tab und iframe-Card) intern und lädt ein aktualisiertes Front-End nicht automatisch nach. Deshalb wird in den URLs unten ein `?=vX.X.X`-Parameter mit der aktuellen Admin- bzw. Widget-Version mitgegeben - nach einem Update muss dieser Parameter manuell angepasst werden (siehe [Troubleshooting](#-troubleshooting)).
 
-## 🆕 Version 0.5.3
+## 🆕 Version 0.5.4
 
 ### Neu in dieser Version:
 
-✅ **Admin: Export / Import**
-- Zwei neue Schaltflächen im Admin-Interface: ↑ importiert einen JSON-Datenstand, ↓ exportiert den aktuellen als Backup
-
-### Bugfixes in dieser Version:
-
-✅ **Versions-Tracking von Backend/Admin/Widget entkoppelt**
-- Admin- und Widget-Dashboard prüfen jetzt jeweils nur noch ihre eigene Version gegen das Backend
-- Vorher lösten Widget und Backend fälschlich bei jedem neuen Gerät/Browser einen kompletten Dashboard-Reload aus
-
-✅ **Admin: Zeilenumbrüche im Bearbeitungsfeld korrigiert**
-- Beim erneuten Öffnen eines Releases erschienen mehrzeilige Detailtexte als literales `<br>` statt als Zeilenumbruch
+✅ **Admin: Drag'n'Drop zwischen "Neue Features" und "Änderungen/Bugfixes"**
+- Einträge im Release-Bearbeiten-Formular lassen sich per Ziehpunkt (⠿) zwischen den beiden Abschnitten verschieben
 
 Vollständige Versionshistorie: [CHANGELOG.md](CHANGELOG.md)
 
@@ -83,12 +75,12 @@ aspect_ratio: 200%
 ```yaml
 title: Release Notes
 icon: mdi:note-text
-url: /release-notes/release-notes.html?=v0.5.3
+url: /release-notes/release-notes.html?=v0.5.4
 ```
 
 **Admin-Interface direkt im Browser:**
 ```
-http://DEINE-IP:8123/release-notes/release-notes.html?=v0.5.3
+http://DEINE-IP:8123/release-notes/release-notes.html?=v0.5.4
 ```
 
 Die Versionsnummer im `?=vX.X.X`-Parameter muss zur jeweils aktuellen **Widget**- bzw. **Admin**-Version passen (nicht zur Backend- oder Paketversion) - siehe [CHANGELOG.md](CHANGELOG.md).
@@ -181,5 +173,5 @@ MIT License - siehe [LICENSE](LICENSE)
 
 Entwickelt für die Home Assistant Community 🏠
 
-**Version:** 0.5.3  
+**Version:** 0.5.4  
 **Repository:** https://github.com/atheile-ha/ha-release-notes-manager
