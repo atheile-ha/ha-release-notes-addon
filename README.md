@@ -14,17 +14,21 @@ Ein elegantes Tool zur Verwaltung und Anzeige von Release Notes direkt in Home A
 - 🔄 **Auto-Reload** - Beide Dashboards prüfen ihre jeweilige Version gegen das Backend
 - 🔧 **Einstellungen** - Popup im Admin-Interface, u.a. mit Export/Import des Datenstands als JSON
 - 🖱️ **Drag'n'Drop** - Einträge im Admin-Interface zwischen "Neue Features" und "Änderungen/Bugfixes" verschieben und innerhalb eines Bereichs umsortieren
+- 🔄 **Automatische Update-Dokumentation** - Beobachtet alle `update.*`-Entitäten der Instanz und legt bei abgeschlossenen Updates sowie neu hinzugekommenen/entfernten Integrationen automatisch passende Release-Notes-Einträge an (ein-/ausschaltbar in den Einstellungen)
 
 **⚠️ Wichtiger Hinweis zu Dashboard-URLs**
 
 Home Assistant cached Dashboard-Kacheln (Dashboard-Tab und iframe-Card) intern und lädt ein aktualisiertes Front-End nicht automatisch nach. Deshalb wird in den URLs unten ein `?=vX.X.X`-Parameter mit der aktuellen Admin- bzw. Widget-Version mitgegeben - nach einem Update muss dieser Parameter manuell angepasst werden (siehe [Troubleshooting](#-troubleshooting)).
 
-## 🆕 Version 0.5.5
+## 🆕 Version 0.6.0
 
 ### Neu in dieser Version:
 
-✅ **Admin: Einträge innerhalb eines Bereichs per Drag'n'Drop umsortieren**
-- Ablegen auf einem anderen Eintrag im selben Bereich sortiert davor oder danach ein (statt nur zwischen "Neue Features" und "Änderungen/Bugfixes" zu wechseln)
+✅ **Automatische Update-Dokumentation über Home-Assistant-Update-Entitäten**
+- Abgeschlossene Updates werden automatisch als Eintrag `"[alte Version] → [neue Version]"` in der Kategorie "Update" dokumentiert
+- Neu hinzukommende bzw. verschwindende `update.*`-Entitäten (Integration/Add-on installiert bzw. deinstalliert) werden ebenfalls automatisch erfasst
+- Erkennung funktioniert zuverlässig auch bei Updates, die einen HA-Neustart erfordern
+- Ein-/ausschaltbar über den neuen Bereich "🔄 Automatische Update-Dokumentation" in den Einstellungen (⚙️) des Admin-Interfaces
 
 Vollständige Versionshistorie: [CHANGELOG.md](CHANGELOG.md)
 
@@ -75,12 +79,12 @@ aspect_ratio: 200%
 ```yaml
 title: Release Notes
 icon: mdi:note-text
-url: /release-notes/release-notes.html?=v0.5.5
+url: /release-notes/release-notes.html?=v0.6.0
 ```
 
 **Admin-Interface direkt im Browser:**
 ```
-http://DEINE-IP:8123/release-notes/release-notes.html?=v0.5.5
+http://DEINE-IP:8123/release-notes/release-notes.html?=v0.6.0
 ```
 
 Die Versionsnummer im `?=vX.X.X`-Parameter muss zur jeweils aktuellen **Widget**- bzw. **Admin**-Version passen (nicht zur Backend- oder Paketversion) - siehe [CHANGELOG.md](CHANGELOG.md).
@@ -113,6 +117,17 @@ Offene bekannte Fehler werden beim Anlegen eines neuen Release automatisch als V
 1. Oben rechts **"Kategorien"** klicken
 2. Neue Kategorie hinzufügen oder bestehende bearbeiten
 3. Farbe anpassen (Klick auf das Label)
+
+### Automatische Update-Dokumentation
+
+Läuft standardmäßig aktiviert im Hintergrund und benötigt keine Konfiguration:
+
+- Schließt eine `update.*`-Entität in Home Assistant ein Update ab, wird automatisch ein Eintrag `"[alte Version] → [neue Version]"` in der Kategorie **"Update"** im passenden Tages-Release angelegt (neues Release wird bei Bedarf automatisch erstellt, Versionsschema `YYYY.M.N`)
+- Neu hinzugekommene bzw. entfernte `update.*`-Entitäten werden als **"Neuinstallation"**/**"Deinstallation"** in der Kategorie **"Integration / Addon"** dokumentiert
+- Mehrere gleichzeitige Ereignisse werden zu einer gemeinsamen Benachrichtigung gebündelt (Home Assistant → Mitteilungen)
+- Beim ersten Aktivieren wird nur eine stille Bestandsaufnahme durchgeführt, es entstehen keine rückwirkenden Einträge für bereits installierte Komponenten
+
+**Ein-/Ausschalten:** Admin-Interface → ⚙️ **Einstellungen** → Abschnitt "🔄 Automatische Update-Dokumentation"
 
 ## 🐛 Troubleshooting
 
@@ -173,5 +188,5 @@ MIT License - siehe [LICENSE](LICENSE)
 
 Entwickelt für die Home Assistant Community 🏠
 
-**Version:** 0.5.5  
+**Version:** 0.6.0  
 **Repository:** https://github.com/atheile-ha/ha-release-notes-manager
