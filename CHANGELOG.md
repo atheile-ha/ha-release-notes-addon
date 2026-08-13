@@ -1,5 +1,27 @@
 # Changelog - Release Notes Manager
 
+## [0.6.0] - 2026-08-13
+
+### 🎉 Neue Features
+
+**Automatische Update-Dokumentation über Home-Assistant-Update-Entitäten**
+- Beobachtet alle `update.*`-Entitäten der Instanz und legt bei abgeschlossenen Updates automatisch einen Eintrag `"[alte Version] → [neue Version]"` in der Kategorie "Update" an
+- Neu hinzukommende bzw. verschwindende Update-Entitäten (Integration/Add-on installiert bzw. deinstalliert) werden ebenfalls dokumentiert (Kategorie "Integration / Addon")
+- Erkennung basiert auf einem persistierten Versions-Cache statt auf der reinen on/off-Transition, damit Updates, die einen HA-Neustart erfordern, zuverlässig erkannt werden
+- Sammelt mehrere Ereignisse (5 Minuten bei laufendem Betrieb, 2 Minuten ab HA-Start bei Neustart-Updates) zu einer gemeinsamen Benachrichtigung
+- Erstlauf nach Aktivierung legt nur eine stille Baseline an, ohne Alt-Einträge für längst installierte Komponenten zu erzeugen
+- Neuer Einstellungsbereich im Admin-Dashboard (⚙️ Einstellungen) zum Ein-/Ausschalten der Funktion (Standard: aktiviert)
+- Versionierung neu erstellter Tages-Releases folgt einem fortlaufenden Zähler pro Monat (`YYYY.M.N`)
+
+### 🔧 Technisch
+
+- Neues Modul `update_tracker.py`
+- Admin-Version: v0.6.0 (Settings-Toggle)
+- Backend-Version: v0.6.0 (Update-Tracker, Storage-Settings-Default)
+- Widget-Version: v0.5.3 (unverändert)
+
+---
+
 ## [0.5.5] - 2026-08-13
 
 ### 🎉 Neue Features

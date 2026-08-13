@@ -44,7 +44,8 @@ class ReleaseNotesStorage:
         return {
             "releases": [],
             "knownIssues": [],
-            "categories": self._get_default_categories()
+            "categories": self._get_default_categories(),
+            "settings": self._get_default_settings()
         }
     
     async def _migrate_from_old_file(self) -> dict[str, Any] | None:
@@ -167,6 +168,12 @@ class ReleaseNotesStorage:
             {"id": "bugfix", "label": "Bugfix", "color": "bg-teal-500"},
             {"id": "breaking", "label": "Breaking Change", "color": "bg-rose-500"}
         ]
+
+    def _get_default_settings(self) -> dict[str, Any]:
+        """Get default settings."""
+        return {
+            "autoUpdateDocs": True
+        }
 
 
 def get_storage(hass: HomeAssistant) -> ReleaseNotesStorage:

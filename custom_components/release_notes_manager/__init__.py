@@ -8,6 +8,7 @@ from homeassistant.components.http import StaticPathConfig
 
 from .storage import get_storage
 from .api import register_api_views
+from .update_tracker import async_setup_update_tracker
 
 _LOGGER = logging.getLogger(__name__)
 DOMAIN = "release_notes_manager"
@@ -16,8 +17,8 @@ DOMAIN = "release_notes_manager"
 # jeweiligen Datei tatsächlich etwas geändert wurde - nicht automatisch bei
 # jedem Release. manifest.json/hacs.json führen zusätzlich die übergreifende
 # Paket-/Release-Version (für HACS), die von diesen dreien unabhängig ist.
-BACKEND_VERSION = "0.5.2"   # __init__.py, api.py, storage.py
-ADMIN_VERSION = "0.5.5"     # release-notes.html (Eingabe-Dashboard)
+BACKEND_VERSION = "0.6.0"   # __init__.py, api.py, storage.py, update_tracker.py
+ADMIN_VERSION = "0.6.0"     # release-notes.html (Eingabe-Dashboard)
 WIDGET_VERSION = "0.5.3"    # release-notes-widget.html (Read-only-Dashboard)
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
@@ -48,6 +49,9 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         "admin": ADMIN_VERSION,
         "widget": WIDGET_VERSION,
     })
+
+    # Automatische Update-Dokumentation ueber update.*-Entitaeten
+    await async_setup_update_tracker(hass, storage)
 
     _LOGGER.info("Release Notes Manager setup complete (Backend v%s)", BACKEND_VERSION)
     _LOGGER.info(
