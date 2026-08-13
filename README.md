@@ -13,18 +13,18 @@ Ein elegantes Tool zur Verwaltung und Anzeige von Release Notes direkt in Home A
 - 🔍 **Suche & Filter** - Schnell das richtige Release finden
 - 🔄 **Auto-Reload** - Beide Dashboards prüfen ihre jeweilige Version gegen das Backend
 - 🔧 **Einstellungen** - Popup im Admin-Interface, u.a. mit Export/Import des Datenstands als JSON
-- 🖱️ **Drag'n'Drop** - Einträge im Admin-Interface zwischen "Neue Features" und "Änderungen/Bugfixes" verschieben
+- 🖱️ **Drag'n'Drop** - Einträge im Admin-Interface zwischen "Neue Features" und "Änderungen/Bugfixes" verschieben und innerhalb eines Bereichs umsortieren
 
 **⚠️ Wichtiger Hinweis zu Dashboard-URLs**
 
 Home Assistant cached Dashboard-Kacheln (Dashboard-Tab und iframe-Card) intern und lädt ein aktualisiertes Front-End nicht automatisch nach. Deshalb wird in den URLs unten ein `?=vX.X.X`-Parameter mit der aktuellen Admin- bzw. Widget-Version mitgegeben - nach einem Update muss dieser Parameter manuell angepasst werden (siehe [Troubleshooting](#-troubleshooting)).
 
-## 🆕 Version 0.5.4
+## 🆕 Version 0.5.5
 
 ### Neu in dieser Version:
 
-✅ **Admin: Drag'n'Drop zwischen "Neue Features" und "Änderungen/Bugfixes"**
-- Einträge im Release-Bearbeiten-Formular lassen sich per Ziehpunkt (⠿) zwischen den beiden Abschnitten verschieben
+✅ **Admin: Einträge innerhalb eines Bereichs per Drag'n'Drop umsortieren**
+- Ablegen auf einem anderen Eintrag im selben Bereich sortiert davor oder danach ein (statt nur zwischen "Neue Features" und "Änderungen/Bugfixes" zu wechseln)
 
 Vollständige Versionshistorie: [CHANGELOG.md](CHANGELOG.md)
 
@@ -75,12 +75,12 @@ aspect_ratio: 200%
 ```yaml
 title: Release Notes
 icon: mdi:note-text
-url: /release-notes/release-notes.html?=v0.5.4
+url: /release-notes/release-notes.html?=v0.5.5
 ```
 
 **Admin-Interface direkt im Browser:**
 ```
-http://DEINE-IP:8123/release-notes/release-notes.html?=v0.5.4
+http://DEINE-IP:8123/release-notes/release-notes.html?=v0.5.5
 ```
 
 Die Versionsnummer im `?=vX.X.X`-Parameter muss zur jeweils aktuellen **Widget**- bzw. **Admin**-Version passen (nicht zur Backend- oder Paketversion) - siehe [CHANGELOG.md](CHANGELOG.md).
@@ -173,5 +173,5 @@ MIT License - siehe [LICENSE](LICENSE)
 
 Entwickelt für die Home Assistant Community 🏠
 
-**Version:** 0.5.4  
+**Version:** 0.5.5  
 **Repository:** https://github.com/atheile-ha/ha-release-notes-manager

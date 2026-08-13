@@ -36,3 +36,7 @@ tests/
 *.tmp
 *.bak
 *.backup
+
+# Local tooling / planning notes (not part of the project)
+.claude/
+.plan.md

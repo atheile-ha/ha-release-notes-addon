@@ -1,5 +1,22 @@
 # Changelog - Release Notes Manager
 
+## [0.5.5] - 2026-08-13
+
+### 🎉 Neue Features
+
+**Admin: Einträge innerhalb eines Bereichs per Drag'n'Drop umsortieren**
+- Ein Eintrag lässt sich jetzt auch direkt auf einem anderen Eintrag im selben Bereich ablegen, um ihn davor oder danach einzusortieren (statt nur zwischen "Neue Features" und "Änderungen/Bugfixes" zu wechseln)
+- Ob vor oder nach dem Zieleintrag eingefügt wird, richtet sich danach, ob in der oberen oder unteren Hälfte der Zielkarte losgelassen wird; eine blaue Linie zeigt die Einfügeposition während des Ziehens an
+- Funktioniert auch bereichsübergreifend: Ablegen auf einer konkreten Karte im jeweils anderen Bereich positioniert den Eintrag dort gezielt, statt ihn immer nur oben einzufügen
+
+### 🔧 Technisch
+
+- Admin-Version: v0.5.5 (Drag'n'Drop-Umsortierung)
+- Backend-Version: v0.5.2 (unverändert)
+- Widget-Version: v0.5.3 (unverändert)
+
+---
+
 ## [0.5.4] - 2026-08-13
 
 ### 🎉 Neue Features
