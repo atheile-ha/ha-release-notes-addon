@@ -110,7 +110,7 @@ class UpdateTracker:
 
         # Neuinstallation / abgeschlossenes Update
         for entity_id, state in current_entities.items():
-            self._diff_and_queue(entity_id, state, cached_entities.get(entity_id), self._startup_pending)
+            await self._diff_and_queue(entity_id, state, cached_entities.get(entity_id), self._startup_pending)
 
         if self._startup_pending and self._startup_timer is None:
             _LOGGER.debug(
@@ -157,7 +157,7 @@ class UpdateTracker:
         ):
             return
 
-        queued = self._diff_and_queue(entity_id, new_state, cached_entities.get(entity_id), self._live_pending)
+        queued = await self._diff_and_queue(entity_id, new_state, cached_entities.get(entity_id), self._live_pending)
         if queued:
             self._schedule_live_flush()
 
@@ -166,9 +166,10 @@ class UpdateTracker:
             self._live_timer = async_call_later(self._hass, LIVE_FLUSH_DELAY, self._flush_live_batch)
 
     # ------------------------------------------------------------------
-    # Diff-Logik - mutiert nur die uebergebene Pending-Liste, nie den Cache
+    # Diff-Logik - mutiert die uebergebene Pending-Liste, den Cache nur im
+    # Sonderfall "Wert war noch unbekannt" (siehe Kommentar unten)
     # ------------------------------------------------------------------
-    def _diff_and_queue(
+    async def _diff_and_queue(
         self,
         entity_id: str,
         state: State,
@@ -191,11 +192,24 @@ class UpdateTracker:
             })
             return True
 
-        if cached.get("installed_version") != installed_version:
+        cached_version = cached.get("installed_version")
+
+        if cached_version is None:
+            # Beim Baseline-Lauf hatte diese Entitaet noch keinen ersten
+            # Datenabruf durchgefuehrt (installed_version war None). Der jetzt
+            # erstmals bekannte Wert ist keine echte Versionsaenderung, nur ein
+            # verspaetetes Nachtragen der Baseline - kein Eintrag, aber der
+            # Cache muss sofort korrigiert werden (nicht erst beim Flush, da
+            # sonst gar kein Flush fuer dieses Ereignis ausgeloest wird).
+            self._cache.setdefault("entities", {})[entity_id] = self._snapshot(state)
+            await self._cache_store.async_save(self._cache)
+            return False
+
+        if cached_version != installed_version:
             pending.append({
                 "entity_id": entity_id,
                 "title": self._resolve_title(entity_id, state),
-                "details": f"{cached.get('installed_version') or '?'} → {installed_version}",
+                "details": f"{cached_version} → {installed_version}",
                 "category": CATEGORY_UPDATE,
                 "kind": "update",
             })

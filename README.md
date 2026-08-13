@@ -20,15 +20,17 @@ Ein elegantes Tool zur Verwaltung und Anzeige von Release Notes direkt in Home A
 
 Home Assistant cached Dashboard-Kacheln (Dashboard-Tab und iframe-Card) intern und lädt ein aktualisiertes Front-End nicht automatisch nach. Deshalb wird in den URLs unten ein `?=vX.X.X`-Parameter mit der aktuellen Admin- bzw. Widget-Version mitgegeben - nach einem Update muss dieser Parameter manuell angepasst werden (siehe [Troubleshooting](#-troubleshooting)).
 
-## 🆕 Version 0.6.0
+## 🆕 Version 0.6.1
 
 ### Neu in dieser Version:
 
-✅ **Automatische Update-Dokumentation über Home-Assistant-Update-Entitäten**
+✅ **Automatische Update-Dokumentation über Home-Assistant-Update-Entitäten** (v0.6.0)
 - Abgeschlossene Updates werden automatisch als Eintrag `"[alte Version] → [neue Version]"` in der Kategorie "Update" dokumentiert
 - Neu hinzukommende bzw. verschwindende `update.*`-Entitäten (Integration/Add-on installiert bzw. deinstalliert) werden ebenfalls automatisch erfasst
 - Erkennung funktioniert zuverlässig auch bei Updates, die einen HA-Neustart erfordern
 - Ein-/ausschaltbar über den neuen Bereich "🔄 Automatische Update-Dokumentation" in den Einstellungen (⚙️) des Admin-Interfaces
+
+🐛 **Bugfix (v0.6.1):** Entitäten, deren Version beim HA-Start noch nicht bekannt war, lösten fälschlich einen `"? → ..."`-Eintrag aus, sobald ihr erster echter Wert eintraf. Das wird jetzt korrekt als bloßes Nachtragen der Baseline erkannt, ohne Eintrag.
 
 Vollständige Versionshistorie: [CHANGELOG.md](CHANGELOG.md)
 
@@ -188,5 +190,5 @@ MIT License - siehe [LICENSE](LICENSE)
 
 Entwickelt für die Home Assistant Community 🏠
 
-**Version:** 0.6.0  
+**Version:** 0.6.1  
 **Repository:** https://github.com/atheile-ha/ha-release-notes-manager

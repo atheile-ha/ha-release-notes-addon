@@ -1,5 +1,21 @@
 # Changelog - Release Notes Manager
 
+## [0.6.1] - 2026-08-13
+
+### 🐛 Bugfix
+
+**Update-Tracker: Falsche "Update"-Einträge beim ersten Lauf nach Integrationen ohne sofortigen Datenabruf**
+- Bei manchen Integrationen ist `installed_version` beim `EVENT_HOMEASSISTANT_STARTED`-Zeitpunkt noch nicht bekannt (`None`), weil der erste Datenabruf noch aussteht. Die Baseline übernahm diesen `None`-Wert; sobald die Integration kurz darauf ihren echten Wert meldete, wurde das fälschlich als abgeschlossenes Update (`"? → ..."`) dokumentiert
+- Ein Wechsel von "noch unbekannt" auf den ersten echten Wert erzeugt jetzt keinen Eintrag mehr, sondern trägt den Cache nur still nach - wie bei der eigentlichen Baseline
+
+### 🔧 Technisch
+
+- Backend-Version: v0.6.1 (`update_tracker.py`)
+- Admin-Version: v0.6.0 (unverändert)
+- Widget-Version: v0.5.3 (unverändert)
+
+---
+
 ## [0.6.0] - 2026-08-13
 
 ### 🎉 Neue Features
