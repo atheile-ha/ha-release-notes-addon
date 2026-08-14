@@ -1,5 +1,22 @@
 # Changelog - Release Notes Manager
 
+## [0.6.2] - 2026-08-13
+
+### 🐛 Bugfix
+
+**Update-Tracker: Offene bekannte Fehler wurden bei automatisch angelegten Releases nicht übernommen**
+- Beim manuellen Anlegen eines Releases im Admin-Dashboard werden offene bekannte Fehler automatisch als Vorschlag in das neue Release übernommen - das fehlte bisher, wenn der Update-Tracker selbst ein neues Tages-Release anlegt
+- Automatisch angelegte Releases übernehmen jetzt ebenfalls alle offenen (nicht gelösten) bekannten Fehler, markiert als übernommen (`inheritedFrom`), analog zu `createNewRelease()` im Admin-Dashboard
+- Betrifft nur das Neu-Anlegen eines Releases; wird ein bereits bestehendes Tages-Release wiederverwendet, bleibt dessen `knownIssues`-Liste unverändert
+
+### 🔧 Technisch
+
+- Backend-Version: v0.6.2 (`update_tracker.py`)
+- Admin-Version: v0.6.0 (unverändert)
+- Widget-Version: v0.5.3 (unverändert)
+
+---
+
 ## [0.6.1] - 2026-08-13
 
 ### 🐛 Bugfix

@@ -253,7 +253,7 @@ class UpdateTracker:
         categories = data.setdefault("categories", [])
         releases = data.setdefault("releases", [])
 
-        release = self._resolve_target_release(releases)
+        release = self._resolve_target_release(releases, data.get("knownIssues", []))
         cache_entities = dict(self._cache.get("entities", {}))
         notification_lines: list[str] = []
 
@@ -292,7 +292,9 @@ class UpdateTracker:
         )
         await self._notify(release["version"], notification_lines)
 
-    def _resolve_target_release(self, releases: list[dict[str, Any]]) -> dict[str, Any]:
+    def _resolve_target_release(
+        self, releases: list[dict[str, Any]], known_issues: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         today = datetime.now().strftime("%Y-%m-%d")
 
         for release in releases:
@@ -314,6 +316,14 @@ class UpdateTracker:
             if r_year == year and r_month == month:
                 best_counter = max(best_counter, r_counter)
 
+        # Wie bei manueller Release-Erstellung (createNewRelease() im Admin-
+        # Dashboard): offene bekannte Fehler werden als Vorschlag uebernommen.
+        inherited_issues = [
+            {**issue, "inheritedFrom": True}
+            for issue in known_issues
+            if issue.get("status") != "resolved"
+        ]
+
         new_release = {
             "id": int(time.time() * 1000),
             "version": f"{year}.{month}.{best_counter + 1}",
@@ -321,7 +331,7 @@ class UpdateTracker:
             "date": today,
             "features": [],
             "changes": [],
-            "knownIssues": [],
+            "knownIssues": inherited_issues,
             "comments": "",
         }
         releases.insert(0, new_release)
