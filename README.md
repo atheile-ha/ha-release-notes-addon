@@ -20,7 +20,7 @@ Ein elegantes Tool zur Verwaltung und Anzeige von Release Notes direkt in Home A
 
 Home Assistant cached Dashboard-Kacheln (Dashboard-Tab und iframe-Card) intern und lädt ein aktualisiertes Front-End nicht automatisch nach. Deshalb wird in den URLs unten ein `?=vX.X.X`-Parameter mit der aktuellen Admin- bzw. Widget-Version mitgegeben - nach einem Update muss dieser Parameter manuell angepasst werden (siehe [Troubleshooting](#-troubleshooting)).
 
-## 🆕 Version 0.6.2
+## 🆕 Version 0.6.3
 
 ### Neu in dieser Version:
 
@@ -33,6 +33,8 @@ Home Assistant cached Dashboard-Kacheln (Dashboard-Tab und iframe-Card) intern u
 🐛 **Bugfix (v0.6.1):** Entitäten, deren Version beim HA-Start noch nicht bekannt war, lösten fälschlich einen `"? → ..."`-Eintrag aus, sobald ihr erster echter Wert eintraf. Das wird jetzt korrekt als bloßes Nachtragen der Baseline erkannt, ohne Eintrag.
 
 🐛 **Bugfix (v0.6.2):** Automatisch angelegte Releases übernehmen jetzt offene bekannte Fehler als Vorschlag, genau wie beim manuellen Anlegen eines Releases im Admin-Dashboard.
+
+🐛 **Bugfix (v0.6.3):** Ein Update konnte doppelt dokumentiert werden - vor allem bei Updates, die einen HA-Neustart erfordern (u.a. der Release Notes Manager selbst). Live-Erkennung und Erkennung beim HA-Start liefen in zwei getrennten Warteschlangen und konnten denselben Versionswechsel jeweils einzeln schreiben. Es gibt jetzt nur noch eine Warteschlange pro Entität, jedes Ereignis wird vor dem Schreiben gegen den aktuellen Zustand gegengeprüft, und ein bereits identisch vorhandener Eintrag wird übersprungen. Im selben Zug behoben: eine beim HA-Start noch nicht geladene Integration wurde fälschlich als "Deinstallation" dokumentiert.
 
 Vollständige Versionshistorie: [CHANGELOG.md](CHANGELOG.md)
 
@@ -130,6 +132,7 @@ Läuft standardmäßig aktiviert im Hintergrund und benötigt keine Konfiguratio
 - Neu hinzugekommene bzw. entfernte `update.*`-Entitäten werden als **"Neuinstallation"**/**"Deinstallation"** in der Kategorie **"Integration / Addon"** dokumentiert
 - Mehrere gleichzeitige Ereignisse werden zu einer gemeinsamen Benachrichtigung gebündelt (Home Assistant → Mitteilungen)
 - Beim ersten Aktivieren wird nur eine stille Bestandsaufnahme durchgeführt, es entstehen keine rückwirkenden Einträge für bereits installierte Komponenten
+- Jedes Ereignis wird pro Entität nur einmal vorgemerkt und vor dem Schreiben nochmals gegen den aktuellen Zustand geprüft - Updates mit Neustart, kurzzeitig nicht verfügbare Entitäten oder spät ladende Integrationen erzeugen dadurch weder doppelte noch falsche Einträge
 
 **Ein-/Ausschalten:** Admin-Interface → ⚙️ **Einstellungen** → Abschnitt "🔄 Automatische Update-Dokumentation"
 
@@ -192,5 +195,5 @@ MIT License - siehe [LICENSE](LICENSE)
 
 Entwickelt für die Home Assistant Community 🏠
 
-**Version:** 0.6.2  
+**Version:** 0.6.3  
 **Repository:** https://github.com/atheile-ha/ha-release-notes-manager

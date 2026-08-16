@@ -1,5 +1,30 @@
 # Changelog - Release Notes Manager
 
+## [0.6.3] - 2026-08-16
+
+### 🐛 Bugfix
+
+**Update-Tracker: Doppelte Einträge für ein und dasselbe Update**
+- Der Tracker führte bisher zwei getrennte Warteschlangen mit zwei unabhängigen Timern (Live-Erkennung 5 Min. / HA-Start-Erkennung 2 Min.). Da der Versions-Cache bewusst erst beim Schreiben aktualisiert wird, konnte derselbe Versionswechsel in beiden Warteschlangen landen und zweimal dokumentiert werden - typischerweise bei Updates, die einen Neustart erfordern: beim Hochfahren meldet die neu angelegte Entität den Wechsel als `state_changed`, kurz darauf fällt er zusätzlich beim Baseline-Vergleich auf
+- Ebenso konnte ein kurzzeitig `unavailable` werdender Update-Entity denselben Wechsel mehrfach in dieselbe Warteschlange legen - das erzeugte zwei Einträge, aber nur **eine** Benachrichtigung
+- Es gibt jetzt nur noch **eine** Warteschlange, verschlüsselt nach Entitäts-ID: pro Entität steht höchstens ein Ereignis an, der Timer wird auf die jeweils frühere Frist vorgezogen
+
+**Update-Tracker: Falsche "Deinstallation" bei spät ladenden Integrationen**
+- War eine Integration (z. B. über HACS verwaltet) zum Zeitpunkt von `EVENT_HOMEASSISTANT_STARTED` noch nicht geladen, wurde sie als Deinstallation dokumentiert
+- Vor dem Schreiben wird jedes vorgemerkte Ereignis jetzt gegen den aktuellen Zustand gegengeprüft: eine wieder vorhandene Entität verwirft die Deinstallations-Meldung, eine zwischenzeitlich erneut geänderte Version verwirft den veralteten Eintrag
+
+**Zusätzliche Absicherung gegen Duplikate**
+- Vor dem Anlegen wird geprüft, ob ein identischer Eintrag (Titel, Details, Kategorie) im Ziel-Release bereits existiert - falls ja, wird er übersprungen, der Versions-Cache aber trotzdem nachgezogen, damit dasselbe Ereignis nicht dauerhaft erneut erkannt wird
+- Benachrichtigungs-IDs sind jetzt millisekundengenau; zwei Benachrichtigungen innerhalb derselben Sekunde überschrieben sich zuvor gegenseitig
+
+### 🔧 Technisch
+
+- Backend-Version: v0.6.3 (`update_tracker.py`)
+- Admin-Version: v0.6.0 (unverändert)
+- Widget-Version: v0.5.3 (unverändert)
+
+---
+
 ## [0.6.2] - 2026-08-13
 
 ### 🐛 Bugfix

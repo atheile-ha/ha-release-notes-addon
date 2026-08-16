@@ -17,7 +17,7 @@ DOMAIN = "release_notes_manager"
 # jeweiligen Datei tatsächlich etwas geändert wurde - nicht automatisch bei
 # jedem Release. manifest.json/hacs.json führen zusätzlich die übergreifende
 # Paket-/Release-Version (für HACS), die von diesen dreien unabhängig ist.
-BACKEND_VERSION = "0.6.2"   # __init__.py, api.py, storage.py, update_tracker.py
+BACKEND_VERSION = "0.6.3"   # __init__.py, api.py, storage.py, update_tracker.py
 ADMIN_VERSION = "0.6.0"     # release-notes.html (Eingabe-Dashboard)
 WIDGET_VERSION = "0.5.3"    # release-notes-widget.html (Read-only-Dashboard)
 
