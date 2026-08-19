@@ -1,5 +1,22 @@
 # Changelog - Release Notes Manager
 
+## [0.6.4] - 2026-08-19
+
+### 🐛 Bugfix
+
+**Admin/Widget: Offene bekannte Fehler fielen beim Anlegen eines neuen Releases zufällig raus**
+- Die globale Liste der offenen bekannten Fehler (aus der `createNewRelease()` beim manuellen Anlegen eines Releases die Vorschläge übernimmt) wurde beim Speichern eines Releases bisher komplett durch dessen eigene `knownIssues`-Liste ersetzt - unabhängig davon, ob gerade der neueste Release oder ein alter Release (z. B. für eine kleine Korrektur) gespeichert wurde
+- Dadurch konnte das erneute Speichern eines älteren Releases die globale Liste auf ihren damaligen Stand zurücksetzen und einen Fehler daraus entfernen, der in allen dazwischenliegenden und neueren Releases weiterhin korrekt als offen gelistet war
+- Die globale Liste wird beim Speichern jetzt aus allen Releases neu aufgebaut (je Fehler-ID der jeweils neueste Stand nach Datum), statt durch die Liste des zuletzt gespeicherten Releases überschrieben zu werden - betroffene Bestandsdaten heilen sich dadurch beim nächsten Speichern eines beliebigen Releases automatisch selbst
+
+### 🔧 Technisch
+
+- Backend-Version: v0.6.3 (unverändert)
+- Admin-Version: v0.6.1 (`release-notes.html`)
+- Widget-Version: v0.5.4 (`release-notes-widget.html`)
+
+---
+
 ## [0.6.3] - 2026-08-16
 
 ### 🐛 Bugfix

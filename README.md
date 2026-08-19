@@ -20,7 +20,7 @@ Ein elegantes Tool zur Verwaltung und Anzeige von Release Notes direkt in Home A
 
 Home Assistant cached Dashboard-Kacheln (Dashboard-Tab und iframe-Card) intern und lädt ein aktualisiertes Front-End nicht automatisch nach. Deshalb wird in den URLs unten ein `?=vX.X.X`-Parameter mit der aktuellen Admin- bzw. Widget-Version mitgegeben - nach einem Update muss dieser Parameter manuell angepasst werden (siehe [Troubleshooting](#-troubleshooting)).
 
-## 🆕 Version 0.6.3
+## 🆕 Version 0.6.4
 
 ### Neu in dieser Version:
 
@@ -35,6 +35,8 @@ Home Assistant cached Dashboard-Kacheln (Dashboard-Tab und iframe-Card) intern u
 🐛 **Bugfix (v0.6.2):** Automatisch angelegte Releases übernehmen jetzt offene bekannte Fehler als Vorschlag, genau wie beim manuellen Anlegen eines Releases im Admin-Dashboard.
 
 🐛 **Bugfix (v0.6.3):** Ein Update konnte doppelt dokumentiert werden - vor allem bei Updates, die einen HA-Neustart erfordern (u.a. der Release Notes Manager selbst). Live-Erkennung und Erkennung beim HA-Start liefen in zwei getrennten Warteschlangen und konnten denselben Versionswechsel jeweils einzeln schreiben. Es gibt jetzt nur noch eine Warteschlange pro Entität, jedes Ereignis wird vor dem Schreiben gegen den aktuellen Zustand gegengeprüft, und ein bereits identisch vorhandener Eintrag wird übersprungen. Im selben Zug behoben: eine beim HA-Start noch nicht geladene Integration wurde fälschlich als "Deinstallation" dokumentiert.
+
+🐛 **Bugfix (v0.6.4):** Offene bekannte Fehler konnten aus der Vorschlagsliste für neue Releases verschwinden, wenn zwischenzeitlich ein älterer Release erneut gespeichert wurde (dessen `knownIssues`-Liste den Fehler noch nicht enthielt). Die globale Liste wird beim Speichern jetzt aus allen Releases neu aufgebaut statt durch den zuletzt gespeicherten Release überschrieben zu werden - bestehende Datenstände heilen sich beim nächsten Speichern automatisch selbst.
 
 Vollständige Versionshistorie: [CHANGELOG.md](CHANGELOG.md)
 
@@ -77,7 +79,7 @@ logger:
 **Dashboard-Widget (iframe-Card):**
 ```yaml
 type: iframe
-url: /release-notes/release-notes-widget.html?=v0.5.3
+url: /release-notes/release-notes-widget.html?=v0.5.4
 aspect_ratio: 200%
 ```
 
@@ -85,12 +87,12 @@ aspect_ratio: 200%
 ```yaml
 title: Release Notes
 icon: mdi:note-text
-url: /release-notes/release-notes.html?=v0.6.0
+url: /release-notes/release-notes.html?=v0.6.1
 ```
 
 **Admin-Interface direkt im Browser:**
 ```
-http://DEINE-IP:8123/release-notes/release-notes.html?=v0.6.0
+http://DEINE-IP:8123/release-notes/release-notes.html?=v0.6.1
 ```
 
 Die Versionsnummer im `?=vX.X.X`-Parameter muss zur jeweils aktuellen **Widget**- bzw. **Admin**-Version passen (nicht zur Backend- oder Paketversion) - siehe [CHANGELOG.md](CHANGELOG.md).
@@ -195,5 +197,5 @@ MIT License - siehe [LICENSE](LICENSE)
 
 Entwickelt für die Home Assistant Community 🏠
 
-**Version:** 0.6.3  
+**Version:** 0.6.4  
 **Repository:** https://github.com/atheile-ha/ha-release-notes-manager

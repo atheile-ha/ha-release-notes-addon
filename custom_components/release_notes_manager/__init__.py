@@ -18,8 +18,8 @@ DOMAIN = "release_notes_manager"
 # jedem Release. manifest.json/hacs.json führen zusätzlich die übergreifende
 # Paket-/Release-Version (für HACS), die von diesen dreien unabhängig ist.
 BACKEND_VERSION = "0.6.3"   # __init__.py, api.py, storage.py, update_tracker.py
-ADMIN_VERSION = "0.6.0"     # release-notes.html (Eingabe-Dashboard)
-WIDGET_VERSION = "0.5.3"    # release-notes-widget.html (Read-only-Dashboard)
+ADMIN_VERSION = "0.6.1"     # release-notes.html (Eingabe-Dashboard)
+WIDGET_VERSION = "0.5.4"    # release-notes-widget.html (Read-only-Dashboard)
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """

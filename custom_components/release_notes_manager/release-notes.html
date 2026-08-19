@@ -4,11 +4,11 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta id="version-meta" name="version" content="0.6.0">
+  <meta id="version-meta" name="version" content="0.6.1">
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home Assistant Release Notes Manager - Admin v0.6.0</title>
+  <title>Home Assistant Release Notes Manager - Admin v0.6.1</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: #f9fafb; color: #111827; }
@@ -307,7 +307,8 @@ function exportData(){const d={releases:state.releases,knownIssues:state.knownIs
 function handleImportFile(event){const file=event.target.files&&event.target.files[0];event.target.value='';if(!file)return;const reader=new FileReader();reader.onload=async()=>{let d;try{d=JSON.parse(reader.result)}catch(e){alert(`Import fehlgeschlagen: Datei enthält kein gültiges JSON.\n\n${e.message}`);return}if(!d||!Array.isArray(d.releases)){alert('Import fehlgeschlagen: Datei enthält keine gültigen Release-Notes-Daten (Feld "releases" fehlt).');return}if(!confirm(`Import wird die aktuellen Daten vollständig ersetzen (${d.releases.length} Releases in der Datei).\n\nFortfahren?`))return;state.releases=d.releases;state.knownIssues=Array.isArray(d.knownIssues)?d.knownIssues:[];state.categories=Array.isArray(d.categories)&&d.categories.length>0?d.categories:state.categories;state.settings=d.settings&&typeof d.settings==='object'?d.settings:state.settings;if(await saveData()){render()}};reader.onerror=()=>alert('Import fehlgeschlagen: Datei konnte nicht gelesen werden.');reader.readAsText(file)}
 function setSaveStatus(t){document.getElementById('save-status').textContent=t}
 function createNewRelease(){const today=new Date().toISOString().split('T')[0];const open=state.knownIssues.filter(i=>i.status!=='resolved');const inherited=open.map(i=>({...JSON.parse(JSON.stringify(i)),inheritedFrom:true}));console.log(`📋 Übernehme ${inherited.length} offene Fehler`);state.editingRelease={id:Date.now(),version:'',name:'',date:today,features:[],changes:[],knownIssues:inherited,comments:''};showModal('release')}
-async function saveRelease(){if(!state.editingRelease||!state.editingRelease.version){alert('Bitte Version eingeben!');return}state.editingRelease.knownIssues=state.editingRelease.knownIssues.map(i=>{const c={...i};delete c.inheritedFrom;return c});const isNew=!state.releases.find(r=>r.id===state.editingRelease.id);state.releases=isNew?[state.editingRelease,...state.releases]:state.releases.map(r=>r.id===state.editingRelease.id?state.editingRelease:r);state.knownIssues=state.editingRelease.knownIssues;if(await saveData()){hideModal();state.editingRelease=null;render()}}
+function rebuildKnownIssues(){const byId=new Map();const sorted=[...state.releases].sort((a,b)=>new Date(b.date)-new Date(a.date)||b.id-a.id);sorted.forEach(r=>{(r.knownIssues||[]).forEach(i=>{if(!byId.has(i.id))byId.set(i.id,i)})});state.knownIssues=Array.from(byId.values())}
+async function saveRelease(){if(!state.editingRelease||!state.editingRelease.version){alert('Bitte Version eingeben!');return}state.editingRelease.knownIssues=state.editingRelease.knownIssues.map(i=>{const c={...i};delete c.inheritedFrom;return c});const isNew=!state.releases.find(r=>r.id===state.editingRelease.id);state.releases=isNew?[state.editingRelease,...state.releases]:state.releases.map(r=>r.id===state.editingRelease.id?state.editingRelease:r);rebuildKnownIssues();if(await saveData()){hideModal();state.editingRelease=null;render()}}
 function editRelease(id){state.editingRelease=JSON.parse(JSON.stringify(state.releases.find(r=>r.id===id)));showModal('release')}
 async function deleteRelease(id){if(!confirm('Release löschen?'))return;state.releases=state.releases.filter(r=>r.id!==id);await saveData();render()}
 function deleteCurrentRelease(){
@@ -470,7 +471,7 @@ document.getElementById('search-input').addEventListener('input',e=>{state.searc
 document.getElementById('category-filter').addEventListener('change',e=>{state.filterCategory=e.target.value;render()});
 // Einzige Quelle für die Admin-Version dieser Datei. Nur erhöhen, wenn an
 // DIESER Datei etwas geändert wurde (unabhängig von Backend/Widget-Version).
-const ADMIN_VERSION = '0.6.0';
+const ADMIN_VERSION = '0.6.1';
 document.title = 'Home Assistant Release Notes Manager - Admin v' + ADMIN_VERSION;
 document.getElementById('version-meta').setAttribute('content', ADMIN_VERSION);
 console.log('🚀 Home Assistant Release Notes Manager (Admin v' + ADMIN_VERSION + ') startet...');
@@ -524,7 +525,7 @@ checkVersionAndReload().then(reloading => {
 
   <!-- Versions-Anzeige -->
   <div id="version-footer" style="position: fixed; bottom: 10px; left: 10px; font-size: 11px; color: #9ca3af; font-family: monospace; z-index: 1000;">
-    Admin: v0.6.0
+    Admin: v0.6.1
   </div>
 </body>
 </html>

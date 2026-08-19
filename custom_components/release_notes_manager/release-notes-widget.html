@@ -4,11 +4,11 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta id="version-meta" name="version" content="widget-0.5.3">
+  <meta id="version-meta" name="version" content="widget-0.5.4">
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home Assistant Release Notes Widget v0.5.3</title>
+  <title>Home Assistant Release Notes Widget v0.5.4</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: #f9fafb; color: #111827; }
@@ -308,7 +308,8 @@ function migrateColorClasses() {
 async function saveData(){console.log('💾 Speichere...');setSaveStatus('Speichere...');const d={releases:state.releases,knownIssues:state.knownIssues,categories:state.categories,lastUpdate:new Date().toISOString()};try{const r=await fetch('/api/release_notes_manager/data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:JSON.stringify(d)})});if(r.ok){console.log('✅ Gespeichert');setSaveStatus('✅ Gespeichert!');setTimeout(()=>setSaveStatus(''),3000);return true}throw new Error(`API ${r.status}`)}catch(e){console.error('❌ Fehler:',e);setSaveStatus('❌ Fehler!');alert(`Speichern fehlgeschlagen!\n\n${e.message}`);return false}}
 function setSaveStatus(t){document.getElementById('save-status').textContent=t}
 function createNewRelease(){const today=new Date().toISOString().split('T')[0];const open=state.knownIssues.filter(i=>i.status!=='resolved');const inherited=open.map(i=>({...JSON.parse(JSON.stringify(i)),inheritedFrom:true}));console.log(`📋 Übernehme ${inherited.length} offene Fehler`);state.editingRelease={id:Date.now(),version:'',name:'',date:today,features:[],changes:[],knownIssues:inherited,comments:''};showModal('release')}
-async function saveRelease(){if(!state.editingRelease||!state.editingRelease.version){alert('Bitte Version eingeben!');return}state.editingRelease.knownIssues=state.editingRelease.knownIssues.map(i=>{const c={...i};delete c.inheritedFrom;return c});const isNew=!state.releases.find(r=>r.id===state.editingRelease.id);state.releases=isNew?[state.editingRelease,...state.releases]:state.releases.map(r=>r.id===state.editingRelease.id?state.editingRelease:r);state.knownIssues=state.editingRelease.knownIssues;if(await saveData()){hideModal();state.editingRelease=null;render()}}
+function rebuildKnownIssues(){const byId=new Map();const sorted=[...state.releases].sort((a,b)=>new Date(b.date)-new Date(a.date)||b.id-a.id);sorted.forEach(r=>{(r.knownIssues||[]).forEach(i=>{if(!byId.has(i.id))byId.set(i.id,i)})});state.knownIssues=Array.from(byId.values())}
+async function saveRelease(){if(!state.editingRelease||!state.editingRelease.version){alert('Bitte Version eingeben!');return}state.editingRelease.knownIssues=state.editingRelease.knownIssues.map(i=>{const c={...i};delete c.inheritedFrom;return c});const isNew=!state.releases.find(r=>r.id===state.editingRelease.id);state.releases=isNew?[state.editingRelease,...state.releases]:state.releases.map(r=>r.id===state.editingRelease.id?state.editingRelease:r);rebuildKnownIssues();if(await saveData()){hideModal();state.editingRelease=null;render()}}
 function editRelease(id){state.editingRelease=JSON.parse(JSON.stringify(state.releases.find(r=>r.id===id)));showModal('release')}
 async function deleteRelease(id){if(!confirm('Release löschen?'))return;state.releases=state.releases.filter(r=>r.id!==id);await saveData();render()}
 function deleteCurrentRelease(){
@@ -479,7 +480,7 @@ document.getElementById('search-input').addEventListener('input',e=>{state.searc
 document.getElementById('category-filter').addEventListener('change',e=>{state.filterCategory=e.target.value;render()});
 // Einzige Quelle für die Widget-Version dieser Datei. Nur erhöhen, wenn an
 // DIESER Datei etwas geändert wurde (unabhängig von Backend/Admin-Version).
-const WIDGET_VERSION = '0.5.3';
+const WIDGET_VERSION = '0.5.4';
 document.title = 'Home Assistant Release Notes Widget v' + WIDGET_VERSION;
 document.getElementById('version-meta').setAttribute('content', 'widget-' + WIDGET_VERSION);
 console.log('🚀 Home Assistant Release Notes Widget v' + WIDGET_VERSION + ' startet...');
@@ -569,7 +570,7 @@ if(slider){slider.value=state.autoCollapseTimeout;updateTimeout(state.autoCollap
 
   <!-- Versions-Anzeige -->
   <div id="version-footer" style="position: fixed; bottom: 10px; left: 10px; font-size: 11px; color: #9ca3af; font-family: monospace; z-index: 1000;">
-    Widget: v0.5.3
+    Widget: v0.5.4
   </div>
 </body>
 </html>
